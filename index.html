@@ -1,13 +1,46 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>case-file-game</title>
+    <!-- 폰트 불러오기 (Noto Serif KR & Special Elite) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Special+Elite&display=swap" rel="stylesheet">
+    <title>사건파일: Noir Detective</title>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
+```
+
+---
+
+### 🛠️ 2. `tailwind.config.js` 수정 (디자인 연결)
+
+왼쪽 파일 목록에서 **`tailwind.config.js`** 파일을 찾아 클릭하세요.
+내용을 싹 지우고 아래 코드로 덮어씌우세요. (폰트 이름을 정확히 연결해주는 설정입니다.)
+
+```javascript
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {
+      fontFamily: {
+        // 기본 폰트를 'Noto Serif KR'로 변경
+        serif: ['"Noto Serif KR"', 'serif'],
+        sans: ['"Noto Serif KR"', 'serif'],
+        // 타자기 폰트 추가
+        typewriter: ['"Special Elite"', 'monospace'],
+      },
+    },
+  },
+  plugins: [],
+}

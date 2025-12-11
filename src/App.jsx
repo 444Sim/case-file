@@ -8,7 +8,7 @@ import {
   LucideBriefcase, LucideVolume2, LucideVolumeX, LucideMapPin 
 } from "lucide-react";
 
-// --- 스타일 및 애니메이션 ---
+// --- Noir Style CSS ---
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&display=swap');
 
@@ -686,9 +686,6 @@ export default function App() {
           {/* 왼쪽: 기본 정보 */}
           <div className="space-y-4">
             <h3 className="text-xs text-gray-500 font-bold border-b border-gray-800 pb-1">기본 정보 (필수)</h3>
-            <div className="flex gap-2 mb-2">
-                <button onClick={handleRandomCharacter} disabled={loading} className="w-full bg-blue-900/30 text-blue-300 border border-blue-800 text-xs py-2 hover:bg-blue-900/50 transition flex items-center justify-center gap-2"><LucideDices size={14}/> 랜덤 용의자 체포 (자동 생성)</button>
-            </div>
             <div className="grid grid-cols-2 gap-3">
               <div><label className="text-[10px] text-gray-400 block">이름</label><input className="w-full bg-neutral-900 border border-gray-700 p-2 text-sm text-white" placeholder="강동원 / James" value={userInputInfo.name} onChange={e => setUserInputInfo({...userInputInfo, name: e.target.value})} /></div>
               <div><label className="text-[10px] text-gray-400 block">나이</label><input className="w-full bg-neutral-900 border border-gray-700 p-2 text-sm text-white" placeholder="32" value={userInputInfo.age} onChange={e => setUserInputInfo({...userInputInfo, age: e.target.value})} /></div>

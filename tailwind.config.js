@@ -8,6 +8,8 @@ export default {
     extend: {
       fontFamily: {
         serif: ['"Noto Serif KR"', 'serif'],
+        sans: ['"Noto Serif KR"', 'serif'],
+        typewriter: ['"Special Elite"', 'monospace'],
       },
     },
   },
