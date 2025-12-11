@@ -16,8 +16,24 @@ const styles = `
 
   body { font-family: 'Noto Serif KR', serif; background-color: #050505; color: #e5e5e5; overflow: hidden; }
   
+  /* Glitch Effect for Title */
+  .glitch {
+    position: relative;
+    color: white;
+    font-size: 3rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-shadow: 2px 2px 0px #00ffff, -2px -2px 0px #ff0000;
+  }
+  
+  .briefing-box {
+    background: #111;
+    border: 1px solid #333;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+  }
+
   /* Animations */
-  @keyframes heartbeat { 0% { transform: scale(1); opacity: 0.8; } 15% { transform: scale(1.15); opacity: 1; } 30% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1); opacity: 0.8; } }
   @keyframes scanline { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
   @keyframes redFlash { 0% { background-color: rgba(153, 27, 27, 0); } 50% { background-color: rgba(153, 27, 27, 0.3); } 100% { background-color: rgba(153, 27, 27, 0); } }
   
@@ -73,6 +89,9 @@ const styles = `
   ::-webkit-scrollbar-track { background: #0a0a0a; } 
   ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; } 
   ::-webkit-scrollbar-thumb:hover { background: #555; }
+  
+  /* Setup Section Headers */
+  .setup-header { font-size: 0.75rem; font-weight: bold; color: #71717a; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; border-bottom: 1px solid #333; padding-bottom: 0.25rem; }
 `;
 
 // --- Helper Functions ---
@@ -227,6 +246,7 @@ export default function App() {
   const fetchWithRetry = async (url, options, retries = 2, backoff = 1000) => {
     try {
       const response = await fetch(url, options);
+      if (response.status === 429) throw new Error("API 요청 한도 초과 (Quota Exceeded)");
       if (response.status >= 500) throw new Error(`Server Error (${response.status})`);
       return response;
     } catch (error) {
@@ -324,7 +344,6 @@ export default function App() {
       const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
       const data = buffer.getChannelData(0);
       for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i * 0.005);
-      
       const clickSrc = ctx.createBufferSource();
       clickSrc.buffer = buffer;
       const clickFilter = ctx.createBiquadFilter();
@@ -484,7 +503,7 @@ export default function App() {
             { "name": "${userInputInfo.name}", "role": "...", "secret": "...", "weakness": "...", "tone": "..." },
             ${isHard ? '{ "name": "참고인", "role": "...", "secret": "...", "weakness": "...", "tone": "..." }' : ''}
           ],
-          "publicBriefing": "사건 개요 (피해자 나이/직업 포함, 메인 캐릭터와의 관계 명시)",
+          "publicBriefing": "사건 개요 (피해자 나이/직업 포함, 메인 캐릭터와의 관계 명시, 매우 상세하게 3줄 이상)",
           "truthDetails": { "weapon": "...", "motive": "...", "trick": "..." },
           "hints": ["자동1", "자동2", "자동3", "수동1", "수동2", "수동3"],
           "hintExplanations": ["해설1", "해설2", "해설3", "해설4", "해설5", "해설6"]
@@ -500,7 +519,7 @@ export default function App() {
       });
 
       const result = await response.json();
-      if (!result.candidates || !result.candidates[0]) throw new Error("API 응답 없음 (Quota Exceeded 가능성)");
+      if (!result.candidates || !result.candidates[0]) throw new Error("API 응답 없음 (Quota Exceeded)");
       const text = result.candidates[0].content.parts[0].text;
       const data = cleanAndParseJSON(text);
 
@@ -789,8 +808,8 @@ export default function App() {
     <div className="min-h-screen bg-black text-gray-300 flex items-center justify-center font-mono p-6">
       <RainOverlay />
       <div className="w-full max-w-md animate-fadeIn z-10 relative">
-        <h1 className="text-5xl text-white font-bold tracking-tighter border-l-4 border-red-700 pl-4 mb-2 drop-shadow-lg">NOIR DETECTIVE</h1>
-        <p className="text-xs text-gray-500 mb-8 uppercase tracking-widest pl-5">Director's Cut v15.2 (Fixed Layout)</p>
+        <h1 className="glitch mb-4" data-text="NOIR DETECTIVE">CASE FILE</h1>
+        <p className="text-xs text-gray-500 mb-8 uppercase tracking-widest pl-1">Director's Cut v16.0 (UI Remastered)</p>
         {playerStats.totalCases > 0 && (
            <div className="bg-neutral-900/80 border border-gray-700 p-4 mb-6 rounded flex items-center justify-between">
               <div><div className="text-[10px] text-gray-500">YOUR RANK</div><div className="text-lg font-bold text-yellow-500">{playerStats.rank}</div></div>
@@ -815,49 +834,63 @@ export default function App() {
     <div className="min-h-screen bg-black text-gray-300 flex items-center justify-center font-mono p-4">
       <RainOverlay />
       <div className="w-full max-w-2xl animate-fadeIn my-auto z-10 relative">
-        <div className="flex justify-between items-center mb-4 border-b border-gray-800 pb-2">
-          <div className="flex items-center gap-2"><ClickButton onClick={() => setScreen('api')}><LucideArrowLeft/></ClickButton><h2 className="text-xl text-white font-bold">PROFILE SETUP</h2></div>
+        <div className="flex justify-between items-center mb-6 border-b border-gray-800 pb-2">
+          <div className="flex items-center gap-2"><ClickButton onClick={() => setScreen('api')}><LucideArrowLeft/></ClickButton><h2 className="text-xl text-white font-bold tracking-widest">PROFILE SETUP</h2></div>
           <div className="flex gap-2">
-             <ClickButton onClick={() => setScreen('archive')} className="text-xs bg-gray-800 px-3 py-1 rounded flex gap-1 hover:bg-gray-700 text-gray-300 border border-gray-700"><LucideArchive size={14}/> 기록 보관소</ClickButton>
+            <ClickButton onClick={fillRandomProfile} className="text-xs flex items-center gap-1 bg-neutral-800 text-gray-300 border border-gray-600 px-3 py-1 rounded hover:bg-neutral-700"><LucideDices size={14}/> 랜덤 입력</ClickButton>
+            <ClickButton onClick={() => setScreen('archive')} className="text-xs bg-neutral-800 px-3 py-1 rounded flex gap-1 hover:bg-neutral-700 text-gray-300 border border-gray-600"><LucideArchive size={14}/> 기록실</ClickButton>
           </div>
         </div>
         
         {/* Buff Display */}
-        <div className="bg-blue-900/10 border border-blue-900/50 p-2 mb-4 rounded flex items-center gap-3 text-xs">
+        <div className="bg-blue-900/10 border border-blue-900/50 p-2 mb-6 rounded flex items-center gap-3 text-xs">
            <div className="text-blue-400 font-bold px-2 py-1 border border-blue-800 bg-blue-900/20">{playerStats.rank}</div>
            <div className="text-gray-400">적용 효과: <span className="text-white">{activeBuffs.label}</span></div>
         </div>
 
-        {errorMsg && <div className="bg-red-900/50 text-red-200 p-3 text-xs mb-4 rounded">{errorMsg}</div>}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-4">
-             <div className="flex justify-end">
-                <ClickButton onClick={fillRandomProfile} className="text-xs flex items-center gap-1 bg-yellow-900/30 text-yellow-500 border border-yellow-800 px-3 py-1 rounded hover:bg-yellow-900/50"><LucideDices size={14}/> 랜덤 프로필 생성</ClickButton>
-             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div><label className="text-[10px] text-gray-400 block">이름</label><input className="w-full bg-neutral-900 border border-gray-700 p-2 text-sm text-white" placeholder="James / 강동원" value={userInputInfo.name} onChange={e => setUserInputInfo({...userInputInfo, name: e.target.value})} /></div>
-              <div><label className="text-[10px] text-gray-400 block">나이</label><input className="w-full bg-neutral-900 border border-gray-700 p-2 text-sm text-white" placeholder="32" value={userInputInfo.age} onChange={e => setUserInputInfo({...userInputInfo, age: e.target.value})} /></div>
+        {errorMsg && <div className="bg-red-900/50 text-red-200 p-3 text-xs mb-4 rounded border border-red-800">{errorMsg}</div>}
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="space-y-6">
+            <div>
+                <div className="setup-header">1. 기본 정보</div>
+                <div className="grid grid-cols-2 gap-3 mb-3">
+                    <div><label className="text-[10px] text-gray-500 block mb-1">이름</label><input className="w-full bg-neutral-900 border border-gray-700 p-2 text-sm text-white focus:border-white transition" placeholder="James / 강동원" value={userInputInfo.name} onChange={e => setUserInputInfo({...userInputInfo, name: e.target.value})} /></div>
+                    <div><label className="text-[10px] text-gray-500 block mb-1">나이</label><input className="w-full bg-neutral-900 border border-gray-700 p-2 text-sm text-white focus:border-white transition" placeholder="32" value={userInputInfo.age} onChange={e => setUserInputInfo({...userInputInfo, age: e.target.value})} /></div>
+                </div>
+                <div className="mb-3"><label className="text-[10px] text-gray-500 block mb-1">직업</label><input className="w-full bg-neutral-900 border border-gray-700 p-2 text-sm text-white focus:border-white transition" placeholder="CEO, Doctor" value={userInputInfo.job} onChange={e => setUserInputInfo({...userInputInfo, job: e.target.value})} /></div>
+                <div><label className="text-[10px] text-gray-500 block mb-1">성별</label><div className="flex gap-2">{['남성', '여성', '무관'].map(g => (<ClickButton key={g} onClick={() => setUserInputInfo({...userInputInfo, gender: g})} className={`flex-1 py-1.5 text-xs border ${userInputInfo.gender === g ? 'bg-gray-700 text-white border-white' : 'border-gray-700 text-gray-500'}`}>{g}</ClickButton>))}</div></div>
             </div>
-            <div><label className="text-[10px] text-gray-400 block">직업</label><input className="w-full bg-neutral-900 border border-gray-700 p-2 text-sm text-white" placeholder="CEO, Doctor" value={userInputInfo.job} onChange={e => setUserInputInfo({...userInputInfo, job: e.target.value})} /></div>
-            <div className="mt-2"><label className="text-[10px] text-gray-400 block">사건 소재 (선택)</label><textarea className="w-full bg-black border border-gray-800 p-2 text-sm text-white h-20 resize-none" placeholder="비워두면 랜덤 생성 (추천)" value={userInputInfo.caseHints} onChange={e => setUserInputInfo({...userInputInfo, caseHints: e.target.value})} /></div>
+
+            <div>
+                 <div className="setup-header">2. 사건 설정</div>
+                 <div className="mb-2"><label className="text-[10px] text-gray-500 block mb-1">사건 소재 (선택)</label><textarea className="w-full bg-black border border-gray-800 p-2 text-sm text-white h-20 resize-none focus:border-gray-500 transition" placeholder="비워두면 AI가 랜덤 생성합니다." value={userInputInfo.caseHints} onChange={e => setUserInputInfo({...userInputInfo, caseHints: e.target.value})} /></div>
+                 <div><label className="text-[10px] text-red-400 font-bold block mb-1">금지 행동 (NG)</label><input className="w-full bg-neutral-900 border border-red-900/30 p-2 text-sm text-white focus:border-red-900 transition" placeholder="예: 비속어 사용 금지" value={userInputInfo.ngActions} onChange={e => setUserInputInfo({...userInputInfo, ngActions: e.target.value})} /></div>
+            </div>
           </div>
-          <div className="space-y-4">
-             <div><label className="text-[10px] text-gray-500 block">성별</label><div className="flex gap-2">{['남성', '여성', '무관'].map(g => (<ClickButton key={g} onClick={() => setUserInputInfo({...userInputInfo, gender: g})} className={`flex-1 py-1.5 text-xs border ${userInputInfo.gender === g ? 'bg-gray-700 text-white border-white' : 'border-gray-700 text-gray-500'}`}>{g}</ClickButton>))}</div></div>
-             <div className="grid grid-cols-2 gap-3">
-               <div><label className="text-[10px] text-gray-500 block">외모/성격</label><input className="w-full bg-neutral-900 border border-gray-700 p-2 text-sm text-white" placeholder="차가운 눈매" value={userInputInfo.trait} onChange={e => setUserInputInfo({...userInputInfo, trait: e.target.value})} /></div>
-               <div><label className="text-[10px] text-gray-500 block">특징</label><input className="w-full bg-neutral-900 border border-gray-700 p-2 text-sm text-white" placeholder="다리를 떰" value={userInputInfo.features} onChange={e => setUserInputInfo({...userInputInfo, features: e.target.value})} /></div>
+
+          <div className="space-y-6">
+             <div>
+               <div className="setup-header">3. 캐릭터 디테일</div>
+               <div className="grid grid-cols-2 gap-3 mb-3">
+                    <div><label className="text-[10px] text-gray-500 block mb-1">성격/외모</label><input className="w-full bg-neutral-900 border border-gray-700 p-2 text-sm text-white focus:border-white transition" placeholder="차가운 눈매" value={userInputInfo.trait} onChange={e => setUserInputInfo({...userInputInfo, trait: e.target.value})} /></div>
+                    <div><label className="text-[10px] text-gray-500 block mb-1">특징</label><input className="w-full bg-neutral-900 border border-gray-700 p-2 text-sm text-white focus:border-white transition" placeholder="다리를 떰" value={userInputInfo.features} onChange={e => setUserInputInfo({...userInputInfo, features: e.target.value})} /></div>
+               </div>
+               <div className="mb-3"><label className="text-[10px] text-yellow-500 font-bold block mb-1">말투 예시 (필수)</label><textarea className="w-full bg-neutral-900 border border-yellow-900/30 p-2 text-sm text-white focus:border-yellow-600 outline-none h-16 resize-none transition" placeholder="예: '증거 있어? 웃기지 마.' (한국어로 입력)" value={userInputInfo.speechStyle} onChange={e => setUserInputInfo({...userInputInfo, speechStyle: e.target.value})} /></div>
+               <div className="grid grid-cols-2 gap-3">
+                    <div><label className="text-[10px] text-blue-400 font-bold block mb-1">유저 호칭</label><input className="w-full bg-neutral-900 border border-blue-900/30 p-2 text-sm text-white focus:border-blue-700 transition" placeholder="형사님" value={userInputInfo.userTitle} onChange={e => setUserInputInfo({...userInputInfo, userTitle: e.target.value})} /></div>
+                    <div><label className="text-[10px] text-gray-500 block mb-1">관계</label><input className="w-full bg-neutral-900 border border-gray-700 p-2 text-sm text-white focus:border-white transition" placeholder="초면" value={userInputInfo.relationship} onChange={e => setUserInputInfo({...userInputInfo, relationship: e.target.value})} /></div>
+               </div>
              </div>
-             <div><label className="text-[10px] text-yellow-500 font-bold block mb-1">말투/대사 예시 (필수)</label><textarea className="w-full bg-neutral-900 border border-yellow-900/50 p-2 text-sm text-white focus:border-yellow-500 outline-none h-16 resize-none" placeholder="예: '증거 있어? 웃기지 마.' (한국어로 입력)" value={userInputInfo.speechStyle} onChange={e => setUserInputInfo({...userInputInfo, speechStyle: e.target.value})} /></div>
-             <div className="grid grid-cols-2 gap-3">
-                <div><label className="text-[10px] text-blue-400 font-bold block">유저 호칭</label><input className="w-full bg-neutral-900 border border-blue-900 p-2 text-sm text-white" placeholder="형사님" value={userInputInfo.userTitle} onChange={e => setUserInputInfo({...userInputInfo, userTitle: e.target.value})} /></div>
-                <div><label className="text-[10px] text-gray-500 block">관계</label><input className="w-full bg-neutral-900 border border-gray-700 p-2 text-sm text-white" placeholder="초면" value={userInputInfo.relationship} onChange={e => setUserInputInfo({...userInputInfo, relationship: e.target.value})} /></div>
+             
+             <div>
+                <div className="setup-header">4. 난이도</div>
+                <div className="flex gap-1 h-10">{['easy', 'medium', 'hard'].map(mode => (<ClickButton key={mode} onClick={() => setDifficulty(mode)} className={`flex-1 text-[10px] uppercase border transition ${difficulty === mode ? 'border-white bg-gray-800 text-white font-bold' : 'border-gray-700 text-gray-500'}`}>{mode}</ClickButton>))}</div>
              </div>
-             <div><label className="text-[10px] text-red-400 font-bold block">금지 행동 (NG)</label><input className="w-full bg-neutral-900 border border-red-900/50 p-2 text-sm text-white" placeholder="비속어 금지" value={userInputInfo.ngActions} onChange={e => setUserInputInfo({...userInputInfo, ngActions: e.target.value})} /></div>
           </div>
         </div>
-        <div className="flex gap-4 mt-6">
-           <div className="flex-1 flex gap-1 h-full">{['easy', 'medium', 'hard'].map(mode => (<ClickButton key={mode} onClick={() => setDifficulty(mode)} className={`flex-1 text-[10px] uppercase border transition ${difficulty === mode ? 'border-white bg-gray-800 text-white' : 'border-gray-700 text-gray-500'}`}>{mode}</ClickButton>))}</div>
-           <ClickButton onClick={handleGenerateCase} className="flex-[2] bg-red-800 hover:bg-red-700 text-white font-bold py-3 transition flex items-center justify-center gap-2">CASE GENERATION <LucideZap size={16}/></ClickButton>
+        <div className="mt-8">
+           <ClickButton onClick={handleGenerateCase} className="w-full bg-red-900 hover:bg-red-800 border border-red-700 text-white font-bold py-4 transition flex items-center justify-center gap-2 text-lg shadow-lg tracking-widest">CASE GENERATION <LucideZap size={20}/></ClickButton>
         </div>
       </div>
     </div>
@@ -943,18 +976,30 @@ export default function App() {
   if (screen === 'briefing') return (
     <div className="min-h-screen bg-black text-gray-300 flex items-center justify-center font-mono p-6">
        <RainOverlay />
-       <div className="w-full max-w-lg animate-fadeIn z-10">
-         <h1 className="text-4xl text-white font-black mb-2 tracking-tighter">CASE FILE</h1>
-         <div className="flex items-center gap-2 mb-4 text-xs text-gray-500 border border-gray-800 rounded-full px-3 py-1 w-fit bg-black">
-            <LucideMapPin size={12}/> {scenario.background}
+       <div className="w-full max-w-2xl animate-fadeIn z-10">
+         <h1 className="glitch mb-6" data-text="CASE FILE">CASE FILE</h1>
+         <div className="flex items-center gap-2 mb-6 text-xs text-gray-400 border border-gray-700 rounded-full px-4 py-1.5 w-fit bg-black">
+            <LucideMapPin size={14}/> {scenario.background}
          </div>
-         <div className="bg-neutral-900/80 border border-gray-800 p-8 space-y-6 shadow-2xl backdrop-blur-sm mt-4">
-            <div><span className="block text-[10px] text-gray-600 mb-2">INCIDENT</span><p className="text-sm text-gray-300 leading-relaxed font-serif italic border-l-2 border-white pl-4">"{scenario.publicBriefing}"</p></div>
-            <div><span className="block text-[10px] text-gray-600 mb-2">PERSONS OF INTEREST</span>
-               {characters.map((c, i) => <div key={i} className="text-white font-bold">{c.name} <span className="text-xs text-gray-500">({c.role === '진범' ? '용의자' : '참고인'})</span></div>)}
+         <div className="briefing-box p-8 space-y-8">
+            <div>
+                <span className="block text-xs font-bold text-gray-500 mb-3 tracking-widest">INCIDENT</span>
+                <p className="text-sm text-gray-200 leading-relaxed font-serif italic border-l-4 border-gray-600 pl-6 py-1">
+                    "{scenario.publicBriefing}"
+                </p>
+            </div>
+            <div>
+                <span className="block text-xs font-bold text-gray-500 mb-3 tracking-widest">PERSONS OF INTEREST</span>
+                <div className="space-y-2">
+                    {characters.map((c, i) => (
+                        <div key={i} className="text-white text-lg font-bold border-b border-gray-800 pb-2">
+                            {c.name} <span className="text-sm font-normal text-gray-500 ml-2">({c.role === '진범' ? '용의자' : '참고인'})</span>
+                        </div>
+                    ))}
+                </div>
             </div>
          </div>
-         <ClickButton onClick={() => setScreen('game')} className="w-full mt-6 bg-red-700 hover:bg-red-600 text-white font-bold py-4 text-lg tracking-widest shadow-lg">ENTER INTERROGATION ROOM</ClickButton>
+         <ClickButton onClick={() => setScreen('game')} className="w-full mt-8 bg-red-800 hover:bg-red-700 text-white font-bold py-4 text-xl tracking-widest shadow-lg border border-red-900">ENTER INTERROGATION ROOM</ClickButton>
        </div>
     </div>
   );
