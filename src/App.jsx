@@ -5,80 +5,101 @@ import {
   LucideLoader2, LucideEdit3, LucideAlertTriangle, LucideEye, LucideEyeOff, LucideLightbulb, 
   LucideArrowLeft, LucideImage, LucideBan, LucideStar, LucideTrophy, LucideArchive, 
   LucideBookOpen, LucideMedal, LucideVenetianMask, LucideGavel, LucideSearch, LucideUsers, 
-  LucideBriefcase, LucideVolume2, LucideVolumeX, LucideMapPin 
+  LucideBriefcase, LucideVolume2, LucideVolumeX, LucideMapPin, LucideDices, LucideTrash2, LucideRotateCcw,
+  LucideCheckCircle2, LucideHistory
 } from "lucide-react";
 
-// --- Noir Style CSS ---
+// --- 스타일 및 애니메이션 ---
 const styles = `
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
 
   body { font-family: 'Noto Serif KR', serif; background-color: #050505; color: #e5e5e5; overflow: hidden; }
   
   /* Animations */
   @keyframes heartbeat { 0% { transform: scale(1); opacity: 0.8; } 15% { transform: scale(1.15); opacity: 1; } 30% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1); opacity: 0.8; } }
   @keyframes scanline { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
-  @keyframes redFlash { 0% { background-color: rgba(220, 38, 38, 0); } 50% { background-color: rgba(220, 38, 38, 0.4); } 100% { background-color: rgba(220, 38, 38, 0); } }
-  @keyframes rain { 0% { background-position: 0% 0%; } 100% { background-position: 20% 100%; } }
-  @keyframes typing { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes redFlash { 0% { background-color: rgba(153, 27, 27, 0); } 50% { background-color: rgba(153, 27, 27, 0.3); } 100% { background-color: rgba(153, 27, 27, 0); } }
   
-  /* Glitch Text */
-  @keyframes glitch-anim-1 {
-    0% { clip-path: inset(20% 0 80% 0); transform: translate(-2px, 1px); }
-    20% { clip-path: inset(60% 0 10% 0); transform: translate(2px, -1px); }
-    40% { clip-path: inset(40% 0 50% 0); transform: translate(-2px, 2px); }
-    60% { clip-path: inset(80% 0 5% 0); transform: translate(2px, -2px); }
-    80% { clip-path: inset(10% 0 70% 0); transform: translate(-1px, 1px); }
-    100% { clip-path: inset(30% 0 50% 0); transform: translate(1px, -1px); }
-  }
-  
-  .glitch-effect { position: relative; }
-  .glitch-effect::before, .glitch-effect::after {
-    content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000;
-  }
-  .glitch-effect::before {
-    left: 2px; text-shadow: -1px 0 #ff0000; clip-path: inset(0 0 0 0);
-    animation: glitch-anim-1 2s infinite linear alternate-reverse;
-  }
-  .glitch-effect::after {
-    left: -2px; text-shadow: -1px 0 #0000ff; clip-path: inset(0 0 0 0);
-    animation: glitch-anim-1 3s infinite linear alternate-reverse;
+  @keyframes rain-drop {
+    0% { transform: translateY(-100vh); opacity: 0; }
+    10% { opacity: 0.5; }
+    90% { opacity: 0.5; }
+    100% { transform: translateY(100vh); opacity: 0; }
   }
 
+  @keyframes typing { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 10% { transform: translate(-1px, -2px) rotate(-1deg); } 20% { transform: translate(-3px, 0px) rotate(1deg); } 30% { transform: translate(3px, 2px) rotate(0deg); } 40% { transform: translate(1px, -1px) rotate(1deg); } 50% { transform: translate(-1px, 2px) rotate(-1deg); } 60% { transform: translate(-3px, 1px) rotate(0deg); } 70% { transform: translate(3px, 1px) rotate(-1deg); } 80% { transform: translate(-1px, -1px) rotate(1deg); } 90% { transform: translate(1px, 2px) rotate(0deg); } 100% { transform: translate(1px, -2px) rotate(-1deg); } }
+
+  .animate-shake { animation: shake 0.5s; }
   .animate-red-flash { animation: redFlash 0.5s ease-out; }
   .animate-fadeIn { animation: fadeIn 0.5s ease-out forwards; }
   
-  .scanline { position: absolute; top: 0; left: 0; right: 0; height: 10px; background: rgba(255, 255, 255, 0.03); animation: scanline 6s linear infinite; pointer-events: none; z-index: 40; }
-  
-  .rain-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;
-    background-image: url('https://www.transparenttextures.com/patterns/stardust.png'); opacity: 0.2;
+  .scanline { 
+    position: absolute; top: 0; left: 0; right: 0; height: 10px; 
+    background: rgba(255, 255, 255, 0.02); 
+    animation: scanline 8s linear infinite; pointer-events: none; z-index: 40; 
   }
-  .rain-overlay::before {
-    content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: repeating-linear-gradient(170deg, transparent, transparent 40px, rgba(180, 180, 180, 0.1) 40px, rgba(180, 180, 180, 0.1) 42px);
-    opacity: 0.5; animation: rain 0.6s linear infinite;
+  
+  .rain-container {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0;
+    overflow: hidden;
+  }
+  
+  .rain-drop {
+    position: absolute;
+    width: 1px;
+    height: 80px;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(150, 150, 150, 0.3));
+    animation: rain-drop 0.6s linear infinite;
+  }
+
+  .crt-effect {
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+    background-size: 100% 3px, 3px 100%;
+    pointer-events: none;
   }
 
   .clue-highlight { color: #fca5a5; font-weight: bold; border-bottom: 1px dashed #ef4444; cursor: help; }
-  .typing-dot { animation: typing 1.4s infinite ease-in-out both; }
-  .typing-dot:nth-child(1) { animation-delay: -0.32s; } .typing-dot:nth-child(2) { animation-delay: -0.16s; }
   
+  .typing-dot { animation: typing 1.4s infinite ease-in-out both; }
+  .typing-dot:nth-child(1) { animation-delay: -0.32s; } 
+  .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+  
+  .font-typewriter { font-family: 'Special Elite', monospace; }
+
   ::-webkit-scrollbar { width: 6px; } 
   ::-webkit-scrollbar-track { background: #0a0a0a; } 
   ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; } 
   ::-webkit-scrollbar-thumb:hover { background: #555; }
 `;
 
-// --- 헬퍼 함수 ---
+// --- Helper Functions ---
 
 const getDifficultySettings = (mode) => {
   switch(mode) {
-    case 'easy': return { turns: 30, damageMultiplier: 1.5, label: '하 (Easy)', multi: false };
-    case 'medium': return { turns: 25, damageMultiplier: 1.0, label: '중 (Normal)', multi: false };
-    case 'hard': return { turns: 20, damageMultiplier: 0.8, label: '상 (Hard)', multi: true };
-    default: return { turns: 25, damageMultiplier: 1.0, label: '중 (Normal)', multi: false };
+    case 'easy': return { turns: 30, damageMultiplier: 1.5, label: 'EASY', multi: false };
+    case 'medium': return { turns: 25, damageMultiplier: 1.0, label: 'NORMAL', multi: false };
+    case 'hard': return { turns: 20, damageMultiplier: 0.8, label: 'HARD', multi: true };
+    default: return { turns: 25, damageMultiplier: 1.0, label: 'NORMAL', multi: false };
   }
+};
+
+const getRankBuffs = (rank) => {
+    const buffs = { turnBonus: 0, hintBonus: 0, dmgMult: 1.0, label: '효과 없음' };
+    if (!rank) return buffs;
+
+    if (rank.includes('전설') || rank.includes('마인드')) {
+        return { turnBonus: 5, hintBonus: 1, dmgMult: 1.1, label: '모든 능력치 상승' };
+    } else if (rank.includes('베테랑') || rank.includes('경감')) {
+        return { turnBonus: 2, hintBonus: 0, dmgMult: 1.1, label: '데미지 10% 증가' };
+    } else if (rank.includes('유능') || rank.includes('경사') || rank.includes('경위')) {
+        return { turnBonus: 0, hintBonus: 1, dmgMult: 1.0, label: '시작 힌트 +1' };
+    } else if (rank.includes('성실') || rank.includes('순경') || rank.includes('경장')) {
+        return { turnBonus: 5, hintBonus: 0, dmgMult: 1.0, label: '제한 시간 +5턴' };
+    }
+    return buffs;
 };
 
 const getStanceInfo = (stance) => {
@@ -88,22 +109,6 @@ const getStanceInfo = (stance) => {
     case 'logic': return { label: '논증', desc: '이성적', color: 'text-emerald-400 border-emerald-400' };
     default: return { label: '질문', desc: '일반', color: 'text-gray-400 border-gray-400' };
   }
-};
-
-const calculateScore = (turnsLeft, startTurns, finalComposure, manualHintsUsed) => {
-    const turnScore = (turnsLeft / startTurns) * 60;
-    const mentalScore = (100 - finalComposure) * 0.4;
-    let total = Math.min(100, Math.floor(turnScore + mentalScore));
-    total = Math.max(0, total - (manualHintsUsed * 5)); 
-
-    let stars = 1;
-    let badge = "신입";
-    if (total >= 95) { stars = 5; badge = "특급 수사관"; }
-    else if (total >= 80) { stars = 4; badge = "베테랑 형사"; }
-    else if (total >= 60) { stars = 3; badge = "유능한 경위"; }
-    else if (total >= 40) { stars = 2; badge = "성실한 경장"; }
-    
-    return { total, stars, badge };
 };
 
 const formatTextWithHighlights = (text) => {
@@ -121,7 +126,7 @@ const cleanAndParseJSON = (text) => {
     const lastBrace = cleaned.lastIndexOf('}');
     if (firstBrace !== -1 && lastBrace !== -1) cleaned = cleaned.substring(firstBrace, lastBrace + 1);
     return JSON.parse(cleaned);
-  } catch (e) { console.error("JSON Parse Error:", e); throw new Error("AI 응답 형식 오류"); }
+  } catch (e) { console.error("JSON Parse Error:", e, text); throw new Error("데이터 파싱 실패: AI 응답이 올바르지 않습니다."); }
 };
 
 export default function App() {
@@ -133,25 +138,23 @@ export default function App() {
   const [loadingText, setLoadingText] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   
-  // 게임 설정
+  // Config
   const [difficulty, setDifficulty] = useState('medium'); 
   const [userInputInfo, setUserInputInfo] = useState({
     name: '', gender: '남성', age: '', job: '', 
-    appearanceAndFeatures: '', // 외모 및 특징 통합
-    trait: '', // 성격 (독립)
-    speechStyle: '', relationship: '', userTitle: '', caseHints: '', ngActions: '' 
+    appearance: '', features: '', speechStyle: '', relationship: '', userTitle: '', trait: '', caseHints: '', ngActions: '' 
   });
 
-  // 시나리오
+  // Scenario
   const [scenario, setScenario] = useState({
-    background: '', // 배경 도시
+    background: '',
     publicBriefing: '', hiddenTruth: '', truthDetails: { weapon: '', motive: '', trick: '' },
     hints: [], hintExplanations: []
   });
   const [characters, setCharacters] = useState([]); 
   const [activeCharIndex, setActiveCharIndex] = useState(0);
 
-  // 플레이 상태
+  // Play State
   const [chatHistories, setChatHistories] = useState({}); 
   const [composure, setComposure] = useState({}); 
   const [timeLeft, setTimeLeft] = useState(20); 
@@ -159,29 +162,29 @@ export default function App() {
   const [gameResult, setGameResult] = useState(null); 
   const [currentStance, setCurrentStance] = useState('normal'); 
   const [userInput, setUserInput] = useState('');
-  const [isCaseFileOpen, setIsCaseFileOpen] = useState(false);
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
+  const [selectedEvidence, setSelectedEvidence] = useState(null); 
   const [shakeScreen, setShakeScreen] = useState(false);
   const [redFlash, setRedFlash] = useState(false); 
   const [collectedEvidence, setCollectedEvidence] = useState([]); 
-  const [unlockedHints, setUnlockedHints] = useState([]);
   
-  // 오디오 상태
+  // Audio State
   const [isMuted, setIsMuted] = useState(false);
   const audioCtx = useRef(null);
   const bgmSource = useRef(null);
 
-  // 추리 제출
+  // Deduction
   const [deduction, setDeduction] = useState({ culprit: '', weapon: '', motive: '', trick: '' });
 
-  // 기록 보관소 (Archive)
+  // Persistence (Archive & Stats)
   const [archive, setArchive] = useState([]);
   const [playerStats, setPlayerStats] = useState({ totalCases: 0, totalScore: 0, rank: '신입 형사' });
   const [selectedCase, setSelectedCase] = useState(null);
 
-  // Refs
+  // References
   const apiHistory = useRef({});
   const messagesEndRef = useRef(null);
+  const rainDrops = useRef([...Array(40)].map(() => ({ left: Math.random() * 100, delay: Math.random() * 2, duration: 0.4 + Math.random() * 0.4 })));
 
   useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [chatHistories, isTyping, activeCharIndex]);
   
@@ -211,10 +214,10 @@ export default function App() {
     }, 0);
 
     let rank = '신입 형사';
-    if (totalScore > 1000) rank = '전설의 수사관';
-    else if (totalScore > 500) rank = '베테랑 경감';
-    else if (totalScore > 200) rank = '유능한 경사';
-    else if (totalScore > 50) rank = '성실한 순경';
+    if (totalScore > 1000) rank = '전설의 수사관'; 
+    else if (totalScore > 500) rank = '베테랑 경감'; 
+    else if (totalScore > 200) rank = '유능한 경사'; 
+    else if (totalScore > 50) rank = '성실한 순경'; 
     
     setPlayerStats({ totalCases, totalScore, rank });
   };
@@ -241,12 +244,13 @@ export default function App() {
       date: new Date().toLocaleDateString(),
       suspect: userInputInfo.name,
       job: userInputInfo.job,
-      role: scenario.role,
+      characterSettings: userInputInfo,
+      role: resultData.role || scenario.role || "미확인", 
       score: resultData.score, 
       summary: resultData.summary,
       truth: scenario.truthDetails,
       chatHistory: chatHistories[0] || [], 
-      clues: collectedEvidence,
+      clues: collectedEvidence, 
       usedHintCount 
     };
     const updatedArchive = [newEntry, ...archive];
@@ -254,8 +258,46 @@ export default function App() {
     localStorage.setItem('noir_detective_archive', JSON.stringify(updatedArchive));
     calculatePlayerStats(updatedArchive);
   };
+  
+  const deleteArchiveCase = (id) => {
+      if (!confirm("이 사건 기록을 영구적으로 삭제하시겠습니까?")) return;
+      const updatedArchive = archive.filter(item => item.id !== id);
+      setArchive(updatedArchive);
+      localStorage.setItem('noir_detective_archive', JSON.stringify(updatedArchive));
+      calculatePlayerStats(updatedArchive);
+      if (selectedCase && selectedCase.id === id) setSelectedCase(null);
+      playSound('trash'); 
+  };
 
-  // --- 사운드 엔진 ---
+  const loadCharacterFromArchive = (archivedItem) => {
+      if (!archivedItem.characterSettings) {
+          alert("이 기록에는 캐릭터 설정 데이터가 없습니다.");
+          return;
+      }
+      if (confirm(`'${archivedItem.suspect}' 캐릭터 설정을 불러와 새로운 수사를 시작하시겠습니까?`)) {
+          setUserInputInfo(archivedItem.characterSettings);
+          setUserInputInfo(prev => ({...prev, caseHints: ''})); 
+          setScreen('setup');
+          setSelectedCase(null);
+          playSound('click');
+      }
+  };
+
+  const fillRandomProfile = () => {
+    const profiles = [
+      { name: '김철수', age: '45', job: '전당포 주인', gender: '남성', trait: '탐욕스러움', features: '금니를 드러내며 웃음', speechStyle: '돈만 주면 뭐든 기억나지.', relationship: '정보원', userTitle: '형사 양반', ngActions: '외상 사절' },
+      { name: '이영희', age: '28', job: '재즈 가수', gender: '여성', trait: '매혹적', features: '담배를 피움', speechStyle: '후우... 그 남자는 위험했어요.', relationship: '내연녀', userTitle: '자기', ngActions: '재촉 금지' },
+      { name: '박태민', age: '39', job: '외과 의사', gender: '남성', trait: '오만함', features: '안경을 치켜올림', speechStyle: '제 시간은 비쌉니다. 용건만 하시죠.', relationship: '피해자의 주치의', userTitle: '경위님', ngActions: '전문성 의심 금지' },
+      { name: '최유리', age: '24', job: '대학생', gender: '여성', trait: '불안함', features: '손톱을 물어뜯음', speechStyle: '저... 저는 정말 아무것도 몰라요...', relationship: '용의자의 딸', userTitle: '아저씨', ngActions: '고함 지르기 금지' },
+      { name: '한진우', age: '35', job: '전직 형사', gender: '남성', trait: '냉소적', features: '한쪽 다리를 전다', speechStyle: '그래서, 내 알 바입니까?', relationship: '구면', userTitle: '경감님', ngActions: '폭력 사용 금지' }
+    ];
+    const pick = profiles[Math.floor(Math.random() * profiles.length)];
+    setUserInputInfo(prev => ({ ...prev, ...pick }));
+    setErrorMsg('');
+    playSound('click');
+  };
+
+  // --- Sound Engine (Noir Style) ---
   const initAudio = () => {
     if (!audioCtx.current) {
       audioCtx.current = new (window.AudioContext || window.webkitAudioContext)();
@@ -274,46 +316,85 @@ export default function App() {
     const gain = ctx.createGain();
     const filter = ctx.createBiquadFilter();
     
-    const bufferSize = ctx.sampleRate * 2; 
-    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-
-    osc.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
     const now = ctx.currentTime;
-    filter.type = 'lowpass'; filter.frequency.value = 600; 
+    osc.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
 
-    if (type === 'heartbeat') {
-      osc.type = 'triangle'; osc.frequency.setValueAtTime(50, now); osc.frequency.exponentialRampToValueAtTime(30, now+0.15);
-      gain.gain.setValueAtTime(0.6, now); gain.gain.exponentialRampToValueAtTime(0.01, now+0.2);
-      osc.start(now); osc.stop(now+0.25);
-    } else if (type === 'thud') {
-      osc.type = 'square'; filter.frequency.value = 150; osc.frequency.setValueAtTime(60, now);
+    if (type === 'click') {
+      const bufferSize = ctx.sampleRate * 0.05;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i * 0.005);
+      
+      const clickSrc = ctx.createBufferSource();
+      clickSrc.buffer = buffer;
+      const clickFilter = ctx.createBiquadFilter();
+      clickFilter.type = 'lowpass'; clickFilter.frequency.value = 1200;
+      const clickGain = ctx.createGain();
+      clickGain.gain.setValueAtTime(0.5, now);
+      clickSrc.connect(clickFilter); clickFilter.connect(clickGain); clickGain.connect(ctx.destination);
+      clickSrc.start(now);
+    } 
+    else if (type === 'trash') {
+        osc.type = 'sawtooth'; osc.frequency.setValueAtTime(50, now);
+        gain.gain.setValueAtTime(0.3, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+        filter.type = 'bandpass'; filter.frequency.value = 800;
+        osc.start(now); osc.stop(now + 0.15);
+    }
+    else if (type === 'heartbeat') {
+      osc.type = 'sine'; osc.frequency.setValueAtTime(40, now); osc.frequency.exponentialRampToValueAtTime(10, now+0.1);
       gain.gain.setValueAtTime(0.8, now); gain.gain.exponentialRampToValueAtTime(0.01, now+0.3);
       osc.start(now); osc.stop(now+0.35);
-    } else if (type === 'bonus') {
-      osc.type = 'sine'; osc.frequency.setValueAtTime(440, now); osc.frequency.linearRampToValueAtTime(880, now+0.1);
-      gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0, now+0.5);
-      osc.start(now); osc.stop(now+0.5);
-    } else if (type === 'typing') {
-      osc.type = 'sawtooth'; filter.frequency.value = 800; osc.frequency.setValueAtTime(200, now);
-      gain.gain.setValueAtTime(0.02, now); gain.gain.exponentialRampToValueAtTime(0.001, now+0.03);
-      osc.start(now); osc.stop(now+0.04);
-    } else if (type === 'alert') {
-      osc.type = 'sawtooth'; filter.frequency.value = 400; osc.frequency.setValueAtTime(100, now); osc.frequency.linearRampToValueAtTime(80, now + 0.5);
-      gain.gain.setValueAtTime(0.2, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.8);
-      osc.start(now); osc.stop(now + 0.85);
-    } else if (type === 'success') {
-      osc.type = 'triangle'; osc.frequency.setValueAtTime(220, now); gain.gain.setValueAtTime(0.2, now); gain.gain.linearRampToValueAtTime(0, now+2.5);
-      osc.start(now); osc.stop(now+2.5);
-    } else if (type === 'bgm' && !bgmSource.current) {
+    } 
+    else if (type === 'thud') {
+      const noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.2, ctx.sampleRate);
+      const data = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+      const noise = ctx.createBufferSource();
+      noise.buffer = noiseBuffer;
+      filter.type = 'lowpass'; filter.frequency.value = 200;
+      gain.gain.setValueAtTime(1, now); gain.gain.exponentialRampToValueAtTime(0.01, now+0.2);
+      noise.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+      noise.start(now);
+    } 
+    else if (type === 'typing') {
+      const tBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.03, ctx.sampleRate);
+      const tData = tBuffer.getChannelData(0);
+      for (let i = 0; i < tData.length; i++) tData[i] = (Math.random() * 2 - 1);
+      const tSrc = ctx.createBufferSource();
+      tSrc.buffer = tBuffer;
+      filter.type = 'bandpass'; filter.frequency.value = 2000;
+      gain.gain.setValueAtTime(0.2, now);
+      tSrc.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+      tSrc.start(now);
+    } 
+    else if (type === 'alert') {
+      osc.type = 'triangle'; osc.frequency.setValueAtTime(110, now); 
+      gain.gain.setValueAtTime(0.3, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 1.5);
+      osc.start(now); osc.stop(now + 1.5);
+    } 
+    else if (type === 'success') {
+       [220, 277, 330].forEach((freq, i) => {
+          const sOsc = ctx.createOscillator();
+          const sGain = ctx.createGain();
+          sOsc.type = 'sawtooth'; sOsc.frequency.value = freq;
+          sGain.gain.setValueAtTime(0.1, now); sGain.gain.exponentialRampToValueAtTime(0.001, now + 3);
+          sOsc.connect(ctx.destination); sOsc.connect(sGain); sGain.connect(ctx.destination);
+          sOsc.start(now + i*0.05); sOsc.stop(now + 3);
+       });
+    } 
+    else if (type === 'bgm' && !bgmSource.current) {
+        const bufferSize = ctx.sampleRate * 4; 
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.5;
+        
         const bgmNode = ctx.createBufferSource();
         bgmNode.buffer = buffer;
         bgmNode.loop = true;
         const bgmFilter = ctx.createBiquadFilter();
-        bgmFilter.type = 'lowpass'; bgmFilter.frequency.value = 300; 
+        bgmFilter.type = 'lowpass'; bgmFilter.frequency.value = 120; 
         const bgmGain = ctx.createGain();
-        bgmGain.gain.value = 0.05; 
+        bgmGain.gain.value = 0.2; 
         bgmNode.connect(bgmFilter); bgmFilter.connect(bgmGain); bgmGain.connect(ctx.destination);
         bgmNode.start();
         bgmSource.current = bgmNode;
@@ -326,6 +407,16 @@ export default function App() {
           bgmSource.current = null;
       }
   };
+
+  const ClickButton = ({ onClick, children, className, disabled }) => (
+      <button 
+        onClick={(e) => { if(!disabled) playSound('click'); if(onClick) onClick(e); }} 
+        className={className} 
+        disabled={disabled}
+      >
+          {children}
+      </button>
+  );
 
   useEffect(() => {
       if (screen === 'game' && !isMuted) {
@@ -349,11 +440,11 @@ export default function App() {
     if (!key) return null;
     try {
       const imagePrompt = `Film noir style, gritty black and white photography, crime scene evidence, ${promptText}. Cinematic lighting, high contrast, mysterious atmosphere. No people.`;
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${key}`, {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${key}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ instances: [{ prompt: imagePrompt }], parameters: { sampleCount: 1 } })
       });
-      if (!response.ok) throw new Error("Image Gen Failed");
+      if (!response.ok) return null;
       const result = await response.json();
       if (result.predictions?.[0]?.bytesBase64Encoded) return `data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`;
       return null;
@@ -365,52 +456,51 @@ export default function App() {
     if (!cleanedKey) return setErrorMsg("API 키를 입력해주세요.");
     if (!userInputInfo.name || !userInputInfo.age || !userInputInfo.job) return setErrorMsg("필수 정보(이름, 나이, 직업)를 입력해주세요.");
 
-    setScreen('generating'); setLoading(true); setLoadingText('사건 파일을 열람하는 중...'); setErrorMsg(''); playSound('typing');
+    setScreen('generating'); setLoading(true); setLoadingText('세계관 및 사건 파일 구성 중...'); setErrorMsg(''); playSound('click');
 
     try {
-      const isHard = difficulty === 'hard';
+      const isHard = getDifficultySettings(difficulty).multi;
       const caseHintText = userInputInfo.caseHints.trim() ? userInputInfo.caseHints : "랜덤 생성: 논리적이고 현실적인 느와르 살인 사건.";
       
       const prompt = `
-        당신은 미스터리 게임 작가입니다. 반드시 한국어로 답변하세요.
-        
-        [메인 캐릭터] ${userInputInfo.name}(${userInputInfo.gender}, ${userInputInfo.age}, ${userInputInfo.job})
-        - 외모 및 특징: ${userInputInfo.appearanceAndFeatures}
-        - 성격: ${userInputInfo.trait}
-        - 말투: ${userInputInfo.speechStyle}
-        - 관계: ${userInputInfo.relationship}
+        당신은 미스터리 게임 작가입니다.
+        [메인 캐릭터] ${userInputInfo.name}(${userInputInfo.gender}, ${userInputInfo.age}, ${userInputInfo.job}), 성격:${userInputInfo.trait}, 특징:${userInputInfo.features}, 말투:${userInputInfo.speechStyle}, 관계:${userInputInfo.relationship}
         [유저 호칭] ${userInputInfo.userTitle || '형사님'}
         [금지 행동] ${userInputInfo.ngActions || '없음'}
         [소재] ${caseHintText}
         [난이도] ${difficulty}
-        
-        [요청사항]
-        1. **캐릭터 이름(${userInputInfo.name})의 언어적 특성을 분석하여 배경이 되는 국가와 도시를 설정하세요.** (예: James -> 미국 뉴욕, 김철수 -> 한국 서울)
-        2. 배경 국가에 맞춰 주변 인물들의 이름도 현지식으로 설정하세요.
-        3. **단, 게임의 모든 지문과 대사는 '한국어'로 출력해야 합니다.** (외화 더빙 느낌 가능)
-        4. 사건 트릭: 현실적/물리적.
-        5. Hints: 오직 '물건 이름'만 (설명X).
+
+        [필수 요청사항 - 관계 및 역할]
+        1. **매우 중요:** 나이 차이가 10살 이상이면 '학교 선후배' 설정 금지. 사회적 관계(사장님, 지인 등) 사용.
+        2. 메인 캐릭터의 역할을 진범/공범/목격자/방관자 중 하나로 무작위 설정. 인과관계 필수.
+        3. ${isHard ? "추가 캐릭터(참고인) 1명 생성." : "추가 캐릭터 없음."}
+        4. 사건의 트릭은 현실적/물리적이어야 함.
+        5. Hints 배열에 총 6개의 사물 단서를 생성하세요.
 
         [출력 JSON]
         {
-          "background": "국가, 도시 (예: 미국, 시카고)",
+          "background": "국가, 도시",
           "characters": [
             { "name": "${userInputInfo.name}", "role": "...", "secret": "...", "weakness": "...", "tone": "..." },
-            ${isHard ? '{ "name": "참고인(현지인)", "role": "...", "secret": "...", "weakness": "...", "tone": "..." }' : ''}
+            ${isHard ? '{ "name": "참고인", "role": "...", "secret": "...", "weakness": "...", "tone": "..." }' : ''}
           ],
-          "publicBriefing": "사건 개요 (한국어로)",
+          "publicBriefing": "사건 개요 (피해자 나이/직업 포함, 메인 캐릭터와의 관계 명시)",
           "truthDetails": { "weapon": "...", "motive": "...", "trick": "..." },
           "hints": ["자동1", "자동2", "자동3", "수동1", "수동2", "수동3"],
           "hintExplanations": ["해설1", "해설2", "해설3", "해설4", "해설5", "해설6"]
         }
       `;
 
-      const response = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${cleanedKey}`, {
+      const response = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${cleanedKey}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+        body: JSON.stringify({ 
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { responseMimeType: "application/json" }
+        })
       });
 
       const result = await response.json();
+      if (!result.candidates || !result.candidates[0]) throw new Error("API 응답 없음 (Quota Exceeded 가능성)");
       const text = result.candidates[0].content.parts[0].text;
       const data = cleanAndParseJSON(text);
 
@@ -420,7 +510,7 @@ export default function App() {
       }
 
       setScenario({
-        background: data.background || "대한민국, 서울",
+        background: data.background || "Unknown City",
         role: data.characters[0].role,
         publicBriefing: data.publicBriefing,
         truthDetails: data.truthDetails,
@@ -437,11 +527,16 @@ export default function App() {
       apiHistory.current = {}; 
 
       setCollectedEvidence([]); 
-      setHintsLeft(3);
+      
+      const buffs = getRankBuffs(playerStats.rank);
+      setHintsLeft(3 + buffs.hintBonus);
+      const settings = getDifficultySettings(difficulty);
+      setTimeLeft(settings.turns + buffs.turnBonus);
+
       setScreen('tutorial'); 
     } catch (e) {
       console.error(e);
-      setErrorMsg(e.message.includes('400') ? "API 키 오류 (400)" : "생성 실패. 다시 시도해주세요.");
+      setErrorMsg(`생성 실패: ${e.message}`);
       setScreen('setup');
     } finally { setLoading(false); }
   };
@@ -460,9 +555,9 @@ export default function App() {
       [비밀] ${char.secret} [약점] ${char.weakness}
       
       [지침]
-      1. **말투: "${speechStyle}"의 뉘앙스를 살려 한국어로 자연스럽게 연기하세요. 예시 대사를 반복하지 마세요.**
-      2. 행동 지문(action): 범행 사실 서술 금지. 오직 신체 반응만.
-      3. (중요) 유저가 (괄호) 안에 행동을 지시하면, '나레이터'가 되어 결과를 건조하게 서술.
+      1. **말투: "${speechStyle}"의 뉘앙스를 참고하여 새로운 문장을 만드세요. 예시 대사를 반복하지 마세요.**
+      2. 행동 지문(action): 범행 사실 서술 금지. 오직 신체 반응만 묘사.
+      3. (중요) 유저가 (괄호) 안에 행동을 지시하면, '나레이터'가 되어 결과를 건조하게 서술하세요.
       
       [출력 JSON] { "action": "...", "response": "...", "damage": 0 }
     `;
@@ -471,9 +566,12 @@ export default function App() {
     
     try {
       setLoading(true);
-      const response = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${getCleanedApiKey()}`, {
+      const response = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${getCleanedApiKey()}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: apiHistory.current[charIndex] })
+        body: JSON.stringify({ 
+            contents: apiHistory.current[charIndex],
+            generationConfig: { responseMimeType: "application/json" }
+        })
       });
       const result = await response.json();
       const data = cleanAndParseJSON(result.candidates[0].content.parts[0].text);
@@ -495,10 +593,20 @@ export default function App() {
     const charIndex = activeCharIndex;
     const char = characters[charIndex];
     const settings = getDifficultySettings(difficulty);
+    const buffs = getRankBuffs(playerStats.rank); 
     
+    const evidencePresented = selectedEvidence;
+    setSelectedEvidence(null); 
+
     setChatHistories(prev => ({
       ...prev,
-      [charIndex]: [...prev[charIndex], { role: 'user', text: currentInput, stance: isAction ? '수사' : getStanceInfo(currentStance).label, isAction }]
+      [charIndex]: [...prev[charIndex], { 
+          role: 'user', 
+          text: currentInput, 
+          stance: isAction ? '수사' : getStanceInfo(currentStance).label, 
+          isAction,
+          presentedEvidence: evidencePresented
+      }]
     }));
     setUserInput('');
     setLoading(true);
@@ -509,31 +617,41 @@ export default function App() {
       let prompt = "";
       if (isAction) {
         prompt = `[SYSTEM]: 플레이어 행동: "${currentInput}". 
-        나레이터가 되어 결과를 한국어로 건조하게 서술하세요. 진실(${scenario.truthDetails.weapon}, ${scenario.truthDetails.trick}) 기반.
+        나레이터가 되어 결과를 객관적으로 서술하세요. 진실(${scenario.truthDetails.weapon}, ${scenario.truthDetails.trick}) 기반.
         JSON 출력 시 "response"에 서술 내용, "action"은 비움, "damage"는 0.`;
       } else {
-        prompt = `[형사]: "${currentInput}" (태세: ${getStanceInfo(currentStance).label})
+        let evidencePrompt = "";
+        if (evidencePresented) {
+            evidencePrompt = `\n[SYSTEM]: 플레이어가 증거물 <${evidencePresented.name}>를 제시했습니다. 설명: ${evidencePresented.desc}. 이 증거가 당신의 진술과 모순되거나 비밀을 파헤친다면, 당황하며 평정심에 큰 피해(20~30)를 입으세요.`;
+        }
+
+        prompt = `[형사]: "${currentInput}" (태세: ${getStanceInfo(currentStance).label}) ${evidencePrompt}
         현재 평정심: ${composure[charIndex]}. 약점(${char.weakness}) 공략 여부?
         설정된 말투 유지. 중요 단어 *별표*. 줄바꿈(\\n) 사용.`;
       }
 
       apiHistory.current[charIndex].push({ role: "user", parts: [{ text: prompt }] });
 
-      const response = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${getCleanedApiKey()}`, {
+      const response = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${getCleanedApiKey()}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: apiHistory.current[charIndex] })
+        body: JSON.stringify({ 
+            contents: apiHistory.current[charIndex],
+            generationConfig: { responseMimeType: "application/json" }
+        })
       });
 
       const result = await response.json();
       const rawText = result.candidates[0].content.parts[0].text;
       const data = cleanAndParseJSON(rawText);
-      const damage = isAction ? 0 : Math.floor((data.damage || 0) * settings.damageMultiplier);
+      
+      const rawDamage = data.damage || 0;
+      const buffedDamage = Math.floor(rawDamage * settings.damageMultiplier * buffs.dmgMult);
+      const damage = isAction ? 0 : buffedDamage;
 
       apiHistory.current[charIndex].push({ role: "model", parts: [{ text: rawText }] });
 
-      // Update State & Visual Effects
       if (damage > 0) {
-          setRedFlash(true); setTimeout(() => setRedFlash(false), 500); // Hit Effect
+          setRedFlash(true); setTimeout(() => setRedFlash(false), 500);
           if (damage >= 15) { setShakeScreen(true); setTimeout(() => setShakeScreen(false), 500); }
       }
       
@@ -544,6 +662,8 @@ export default function App() {
 
       const lines = data.response.split('\n').filter(l => l.trim());
       setIsTyping(true); 
+      playSound('click'); 
+
       for (let i = 0; i < lines.length; i++) {
           await new Promise(r => setTimeout(r, 800 + lines[i].length * 20)); 
           setChatHistories(prev => ({
@@ -559,13 +679,12 @@ export default function App() {
       }
       setIsTyping(false);
 
-      // Trigger Evidence (Auto: 0,1,2)
       let hintIndex = -1;
-      if (nextTurn === 15) hintIndex = 0;
-      else if (nextTurn === 10) hintIndex = 1;
-      else if (nextTurn === 5) hintIndex = 2;
+      if (nextTurn === 15 && !collectedEvidence.some(e => e.index === 0)) hintIndex = 0;
+      else if (nextTurn === 10 && !collectedEvidence.some(e => e.index === 1)) hintIndex = 1;
+      else if (nextTurn === 5 && !collectedEvidence.some(e => e.index === 2)) hintIndex = 2;
 
-      if (hintIndex !== -1 && !collectedEvidence.some(e => e.index === hintIndex)) {
+      if (hintIndex !== -1) {
         const hintText = scenario.hints[hintIndex];
         triggerEvidenceEvent(hintIndex, hintText, "현장 자동 전송");
       }
@@ -581,11 +700,14 @@ export default function App() {
   const handleRequestHint = async () => {
       if (hintsLeft <= 0) return;
       const hintIndex = 3 + (3 - hintsLeft);
+      if (hintIndex >= scenario.hints.length) return; 
+
       const hintText = scenario.hints[hintIndex];
-      if (!hintText) return;
+      if (!hintText || collectedEvidence.some(e => e.index === hintIndex)) return; 
 
       setHintsLeft(prev => prev - 1);
       triggerEvidenceEvent(hintIndex, hintText, "추가 수사 요청");
+      playSound('click');
   };
 
   const triggerEvidenceEvent = (index, text, source) => {
@@ -609,18 +731,26 @@ export default function App() {
   };
 
   const submitDeduction = async () => {
+      if (!deduction.culprit || !deduction.weapon || !deduction.motive || !deduction.trick) {
+          alert("모든 항목(진범, 살해 도구, 동기, 트릭)을 입력해야 보고서를 제출할 수 있습니다.");
+          return;
+      }
+
       setLoading(true); playSound('typing');
       try {
           const prompt = `
             [사건 진상] 범인:${characters.find(c => c.role === '진범' || c.role === '공범')?.name || "알 수 없음"}, 흉기:${scenario.truthDetails.weapon}, 동기:${scenario.truthDetails.motive}, 트릭:${scenario.truthDetails.trick}
             [유저 답안] 범인:${deduction.culprit}, 흉기:${deduction.weapon}, 동기:${deduction.motive}, 트릭:${deduction.trick}
-            [요청] 정확도 100점 만점 채점, 한국어로 피드백, 최종 등급(S/A/B/C/F).
+            [요청] 정확도 100점 만점 채점, 피드백 작성, 최종 등급(S/A/B/C/F).
             [출력 JSON] { "score": 85, "rank": "A", "feedback": "..." }
           `;
           
-          const response = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${getCleanedApiKey()}`, {
+          const response = await fetchWithRetry(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${getCleanedApiKey()}`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            body: JSON.stringify({ 
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: { responseMimeType: "application/json" }
+            })
           });
           
           const result = await response.json();
@@ -644,74 +774,80 @@ export default function App() {
       } catch (e) { alert("오류 발생"); } finally { setLoading(false); }
   };
 
-  // --- 화면 렌더링 ---
+  // --- Screens ---
+
+  // Simple Rain Component using Array
+  const RainOverlay = () => (
+    <div className="rain-container">
+      {rainDrops.current.map((drop, i) => (
+        <div key={i} className="rain-drop" style={{ left: `${drop.left}%`, animationDuration: `${drop.duration}s`, animationDelay: `${drop.delay}s` }} />
+      ))}
+    </div>
+  );
 
   if (screen === 'api') return (
     <div className="min-h-screen bg-black text-gray-300 flex items-center justify-center font-mono p-6">
-      <div className="rain-overlay"></div>
+      <RainOverlay />
       <div className="w-full max-w-md animate-fadeIn z-10 relative">
-        <h1 className="text-5xl text-white font-bold tracking-tighter border-l-4 border-red-700 pl-4 mb-2 drop-shadow-lg">사건파일</h1>
-        <p className="text-xs text-gray-500 mb-8 uppercase tracking-widest pl-5">CASE FILE: Noir Investigation</p>
-        
+        <h1 className="text-5xl text-white font-bold tracking-tighter border-l-4 border-red-700 pl-4 mb-2 drop-shadow-lg">NOIR DETECTIVE</h1>
+        <p className="text-xs text-gray-500 mb-8 uppercase tracking-widest pl-5">Director's Cut v15.2 (Fixed Layout)</p>
         {playerStats.totalCases > 0 && (
            <div className="bg-neutral-900/80 border border-gray-700 p-4 mb-6 rounded flex items-center justify-between">
-              <div><div className="text-[10px] text-gray-500">현재 계급</div><div className="text-lg font-bold text-yellow-500">{playerStats.rank}</div></div>
-              <div className="text-right"><div className="text-[10px] text-gray-500">해결한 사건</div><div className="text-white font-bold">{playerStats.totalCases}건</div></div>
+              <div><div className="text-[10px] text-gray-500">YOUR RANK</div><div className="text-lg font-bold text-yellow-500">{playerStats.rank}</div></div>
+              <div className="text-right"><div className="text-[10px] text-gray-500">SOLVED CASES</div><div className="text-white font-bold">{playerStats.totalCases}</div></div>
            </div>
         )}
-
         <div className="bg-neutral-900 p-6 rounded border border-neutral-800 space-y-6 shadow-2xl">
-          <div>
-            <label className="block text-xs font-bold text-gray-500 mb-2">ACCESS KEY</label>
-            <div className="relative"><input type={showApiKey ? "text" : "password"} className="w-full bg-black border border-gray-700 p-3 pr-10 text-white focus:border-red-500 outline-none transition" placeholder="API 키 입력" value={apiKey} onChange={e => { setApiKey(e.target.value); setErrorMsg(''); }} /><button onClick={() => setShowApiKey(!showApiKey)} className="absolute right-3 top-3 text-gray-500 hover:text-white">{showApiKey ? <LucideEyeOff size={18}/> : <LucideEye size={18}/>}</button></div>
+          <div><label className="block text-xs font-bold text-gray-500 mb-2">ACCESS KEY</label><div className="relative"><input type={showApiKey ? "text" : "password"} className="w-full bg-black border border-gray-700 p-3 pr-10 text-white focus:border-red-500 outline-none transition" placeholder="Paste API Key" value={apiKey} onChange={e => { setApiKey(e.target.value); setErrorMsg(''); }} /><ClickButton onClick={() => setShowApiKey(!showApiKey)} className="absolute right-3 top-3 text-gray-500 hover:text-white">{showApiKey ? <LucideEyeOff size={18}/> : <LucideEye size={18}/>}</ClickButton></div></div>
+          <ClickButton onClick={() => apiKey.trim() ? setScreen('setup') : setErrorMsg('API 키 필요')} className="w-full bg-white text-black font-bold py-3 hover:bg-gray-200 transition flex items-center justify-center gap-2">SYSTEM LOGIN <LucideSend size={16}/></ClickButton>
+          <div className="text-center pt-2">
+             <ClickButton onClick={() => setScreen('archive')} className="text-xs text-gray-500 hover:text-white flex items-center justify-center gap-1 mx-auto"><LucideHistory size={12}/> 지난 사건 기록 보기</ClickButton>
           </div>
-          <button onClick={() => apiKey.trim() ? setScreen('setup') : setErrorMsg('API 키를 입력해주세요.')} className="w-full bg-white text-black font-bold py-3 hover:bg-gray-200 transition flex items-center justify-center gap-2">시스템 접속 <LucideSend size={16}/></button>
           {errorMsg && <div className="text-red-400 text-xs text-center">{errorMsg}</div>}
         </div>
       </div>
     </div>
   );
 
-  if (screen === 'setup') return (
+  if (screen === 'setup') {
+    const activeBuffs = getRankBuffs(playerStats.rank);
+    return (
     <div className="min-h-screen bg-black text-gray-300 flex items-center justify-center font-mono p-4">
-      <div className="rain-overlay"></div>
+      <RainOverlay />
       <div className="w-full max-w-2xl animate-fadeIn my-auto z-10 relative">
-        <div className="flex justify-between mb-4 border-b border-gray-800 pb-2">
-          <div className="flex items-center gap-2"><button onClick={() => setScreen('api')}><LucideArrowLeft/></button><h2 className="text-xl text-white font-bold">프로필 설정</h2></div>
-          <button onClick={() => setScreen('archive')} className="text-xs bg-gray-800 px-3 py-1 rounded flex gap-1"><LucideArchive size={14}/> 사건 기록</button>
+        <div className="flex justify-between items-center mb-4 border-b border-gray-800 pb-2">
+          <div className="flex items-center gap-2"><ClickButton onClick={() => setScreen('api')}><LucideArrowLeft/></ClickButton><h2 className="text-xl text-white font-bold">PROFILE SETUP</h2></div>
+          <div className="flex gap-2">
+             <ClickButton onClick={() => setScreen('archive')} className="text-xs bg-gray-800 px-3 py-1 rounded flex gap-1 hover:bg-gray-700 text-gray-300 border border-gray-700"><LucideArchive size={14}/> 기록 보관소</ClickButton>
+          </div>
         </div>
-        {errorMsg && <div className="bg-red-900/50 text-red-200 p-3 text-xs mb-4 rounded">{errorMsg}</div>}
         
+        {/* Buff Display */}
+        <div className="bg-blue-900/10 border border-blue-900/50 p-2 mb-4 rounded flex items-center gap-3 text-xs">
+           <div className="text-blue-400 font-bold px-2 py-1 border border-blue-800 bg-blue-900/20">{playerStats.rank}</div>
+           <div className="text-gray-400">적용 효과: <span className="text-white">{activeBuffs.label}</span></div>
+        </div>
+
+        {errorMsg && <div className="bg-red-900/50 text-red-200 p-3 text-xs mb-4 rounded">{errorMsg}</div>}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* 왼쪽: 기본 정보 */}
           <div className="space-y-4">
-            <h3 className="text-xs text-gray-500 font-bold border-b border-gray-800 pb-1">기본 정보 (필수)</h3>
+             <div className="flex justify-end">
+                <ClickButton onClick={fillRandomProfile} className="text-xs flex items-center gap-1 bg-yellow-900/30 text-yellow-500 border border-yellow-800 px-3 py-1 rounded hover:bg-yellow-900/50"><LucideDices size={14}/> 랜덤 프로필 생성</ClickButton>
+             </div>
             <div className="grid grid-cols-2 gap-3">
-              <div><label className="text-[10px] text-gray-400 block">이름</label><input className="w-full bg-neutral-900 border border-gray-700 p-2 text-sm text-white" placeholder="강동원 / James" value={userInputInfo.name} onChange={e => setUserInputInfo({...userInputInfo, name: e.target.value})} /></div>
+              <div><label className="text-[10px] text-gray-400 block">이름</label><input className="w-full bg-neutral-900 border border-gray-700 p-2 text-sm text-white" placeholder="James / 강동원" value={userInputInfo.name} onChange={e => setUserInputInfo({...userInputInfo, name: e.target.value})} /></div>
               <div><label className="text-[10px] text-gray-400 block">나이</label><input className="w-full bg-neutral-900 border border-gray-700 p-2 text-sm text-white" placeholder="32" value={userInputInfo.age} onChange={e => setUserInputInfo({...userInputInfo, age: e.target.value})} /></div>
             </div>
             <div><label className="text-[10px] text-gray-400 block">직업</label><input className="w-full bg-neutral-900 border border-gray-700 p-2 text-sm text-white" placeholder="CEO, Doctor" value={userInputInfo.job} onChange={e => setUserInputInfo({...userInputInfo, job: e.target.value})} /></div>
-            <div className="mt-2"><label className="text-[10px] text-gray-400 block">사건 소재 (선택)</label><textarea className="w-full bg-black border border-gray-800 p-2 text-sm text-white h-24 resize-none" placeholder="비워두면 캐릭터 국적에 맞는 사건이 자동 생성됩니다." value={userInputInfo.caseHints} onChange={e => setUserInputInfo({...userInputInfo, caseHints: e.target.value})} /></div>
+            <div className="mt-2"><label className="text-[10px] text-gray-400 block">사건 소재 (선택)</label><textarea className="w-full bg-black border border-gray-800 p-2 text-sm text-white h-20 resize-none" placeholder="비워두면 랜덤 생성 (추천)" value={userInputInfo.caseHints} onChange={e => setUserInputInfo({...userInputInfo, caseHints: e.target.value})} /></div>
           </div>
-          
-          {/* 오른쪽: 디테일 설정 */}
           <div className="space-y-4">
-             <h3 className="text-xs text-gray-500 font-bold border-b border-gray-800 pb-1">디테일 설정 (선택)</h3>
-             <div><label className="text-[10px] text-gray-500 block">성별</label><div className="flex gap-2">{['남성', '여성', '무관'].map(g => (<button key={g} onClick={() => setUserInputInfo({...userInputInfo, gender: g})} className={`flex-1 py-1.5 text-xs border ${userInputInfo.gender === g ? 'bg-gray-700 text-white border-white' : 'border-gray-700 text-gray-500'}`}>{g}</button>))}</div></div>
-             
-             <div>
-               <label className="text-[10px] text-gray-500 block">외모 및 특징</label>
-               <input className="w-full bg-neutral-900 border border-gray-700 p-2 text-sm text-white" placeholder="차가운 눈매, 다리를 저는 습관" value={userInputInfo.appearanceAndFeatures} onChange={e => setUserInputInfo({...userInputInfo, appearanceAndFeatures: e.target.value})} />
+             <div><label className="text-[10px] text-gray-500 block">성별</label><div className="flex gap-2">{['남성', '여성', '무관'].map(g => (<ClickButton key={g} onClick={() => setUserInputInfo({...userInputInfo, gender: g})} className={`flex-1 py-1.5 text-xs border ${userInputInfo.gender === g ? 'bg-gray-700 text-white border-white' : 'border-gray-700 text-gray-500'}`}>{g}</ClickButton>))}</div></div>
+             <div className="grid grid-cols-2 gap-3">
+               <div><label className="text-[10px] text-gray-500 block">외모/성격</label><input className="w-full bg-neutral-900 border border-gray-700 p-2 text-sm text-white" placeholder="차가운 눈매" value={userInputInfo.trait} onChange={e => setUserInputInfo({...userInputInfo, trait: e.target.value})} /></div>
+               <div><label className="text-[10px] text-gray-500 block">특징</label><input className="w-full bg-neutral-900 border border-gray-700 p-2 text-sm text-white" placeholder="다리를 떰" value={userInputInfo.features} onChange={e => setUserInputInfo({...userInputInfo, features: e.target.value})} /></div>
              </div>
-             <div>
-               <label className="text-[10px] text-gray-500 block">성격</label>
-               <input className="w-full bg-neutral-900 border border-gray-700 p-2 text-sm text-white" placeholder="냉소적이고 이기적임" value={userInputInfo.trait} onChange={e => setUserInputInfo({...userInputInfo, trait: e.target.value})} />
-             </div>
-
-             <div>
-               <label className="text-[10px] text-yellow-500 font-bold block mb-1">말투/대사 예시 (필수)</label>
-               <textarea className="w-full bg-neutral-900 border border-yellow-900/50 p-2 text-sm text-white focus:border-yellow-500 outline-none h-16 resize-none" placeholder="예: '증거 있어? 웃기지 마.' (한국어로 입력)" value={userInputInfo.speechStyle} onChange={e => setUserInputInfo({...userInputInfo, speechStyle: e.target.value})} />
-             </div>
+             <div><label className="text-[10px] text-yellow-500 font-bold block mb-1">말투/대사 예시 (필수)</label><textarea className="w-full bg-neutral-900 border border-yellow-900/50 p-2 text-sm text-white focus:border-yellow-500 outline-none h-16 resize-none" placeholder="예: '증거 있어? 웃기지 마.' (한국어로 입력)" value={userInputInfo.speechStyle} onChange={e => setUserInputInfo({...userInputInfo, speechStyle: e.target.value})} /></div>
              <div className="grid grid-cols-2 gap-3">
                 <div><label className="text-[10px] text-blue-400 font-bold block">유저 호칭</label><input className="w-full bg-neutral-900 border border-blue-900 p-2 text-sm text-white" placeholder="형사님" value={userInputInfo.userTitle} onChange={e => setUserInputInfo({...userInputInfo, userTitle: e.target.value})} /></div>
                 <div><label className="text-[10px] text-gray-500 block">관계</label><input className="w-full bg-neutral-900 border border-gray-700 p-2 text-sm text-white" placeholder="초면" value={userInputInfo.relationship} onChange={e => setUserInputInfo({...userInputInfo, relationship: e.target.value})} /></div>
@@ -719,79 +855,106 @@ export default function App() {
              <div><label className="text-[10px] text-red-400 font-bold block">금지 행동 (NG)</label><input className="w-full bg-neutral-900 border border-red-900/50 p-2 text-sm text-white" placeholder="비속어 금지" value={userInputInfo.ngActions} onChange={e => setUserInputInfo({...userInputInfo, ngActions: e.target.value})} /></div>
           </div>
         </div>
-        
         <div className="flex gap-4 mt-6">
-           <div className="flex-1 flex gap-1 h-full">{['easy', 'medium', 'hard'].map(mode => { const set = getDifficultySettings(mode); return (<button key={mode} onClick={() => setDifficulty(mode)} className={`flex-1 text-[10px] uppercase border transition ${difficulty === mode ? 'border-white bg-gray-800 text-white' : 'border-gray-700 text-gray-500'}`}>{set.label}</button>); })}</div>
-           <button onClick={handleGenerateCase} className="flex-[2] bg-red-800 hover:bg-red-700 text-white font-bold py-3 transition flex items-center justify-center gap-2">사건 생성 <LucideZap size={16}/></button>
+           <div className="flex-1 flex gap-1 h-full">{['easy', 'medium', 'hard'].map(mode => (<ClickButton key={mode} onClick={() => setDifficulty(mode)} className={`flex-1 text-[10px] uppercase border transition ${difficulty === mode ? 'border-white bg-gray-800 text-white' : 'border-gray-700 text-gray-500'}`}>{mode}</ClickButton>))}</div>
+           <ClickButton onClick={handleGenerateCase} className="flex-[2] bg-red-800 hover:bg-red-700 text-white font-bold py-3 transition flex items-center justify-center gap-2">CASE GENERATION <LucideZap size={16}/></ClickButton>
         </div>
       </div>
     </div>
   );
+  }
 
   if (screen === 'archive') return (
     <div className="min-h-screen bg-black text-gray-300 flex items-center justify-center font-mono p-6">
        {selectedCase ? (
         <div className="w-full max-w-2xl animate-fadeIn">
-           <button onClick={() => setSelectedCase(null)} className="mb-4 text-gray-500 hover:text-white flex items-center gap-2"><LucideArrowLeft size={16}/> 목록으로</button>
+           <div className="flex justify-between items-center mb-4">
+                <ClickButton onClick={() => setSelectedCase(null)} className="text-gray-500 hover:text-white flex items-center gap-2"><LucideArrowLeft size={16}/> 목록으로</ClickButton>
+                <ClickButton onClick={() => deleteArchiveCase(selectedCase.id)} className="text-red-500 hover:text-red-400 flex items-center gap-1 text-xs border border-red-900/50 px-2 py-1"><LucideTrash2 size={12}/> 기록 삭제</ClickButton>
+           </div>
            <div className="bg-neutral-900 border border-gray-800 p-6 rounded-lg">
-              <h2 className="text-2xl font-bold text-white mb-4">{selectedCase.suspect} 사건 <span className="text-sm font-normal text-gray-500">({selectedCase.date})</span></h2>
+              <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h2 className="text-2xl font-bold text-white">{selectedCase.suspect} 사건</h2>
+                    <span className="text-sm text-gray-500">{selectedCase.date}</span>
+                  </div>
+                  <ClickButton onClick={() => loadCharacterFromArchive(selectedCase)} className="bg-blue-900/30 border border-blue-800 text-blue-300 text-xs px-3 py-2 hover:bg-blue-900/50 flex gap-2 items-center">
+                      <LucideRotateCcw size={14}/> 이 설정으로 재수사
+                  </ClickButton>
+              </div>
               <div className="space-y-4">
                  <div className="bg-black p-4 border border-red-900/30 rounded text-xs text-gray-300">
                     <p className="text-red-400 font-bold mb-2">진상 (TRUTH)</p>
-                    <p>범행 도구: {selectedCase.truth?.weapon}</p>
-                    <p>범행 동기: {selectedCase.truth?.motive}</p>
-                    <p>결정적 트릭: {selectedCase.truth?.trick}</p>
+                    <p>흉기: {selectedCase.truth?.weapon}</p>
+                    <p>동기: {selectedCase.truth?.motive}</p>
+                    <p>트릭: {selectedCase.truth?.trick}</p>
                  </div>
                  {selectedCase.clues && selectedCase.clues.length > 0 && (
                     <div><h3 className="text-sm font-bold text-gray-500 mb-2">확보된 증거물</h3><div className="flex gap-2 overflow-x-auto pb-2">{selectedCase.clues.map((c, i) => (<div key={i} className="min-w-[100px] w-[100px] bg-black p-1 border border-gray-800"><img src={c.url} className="w-full h-16 object-cover mb-1 grayscale" alt={c.name}/><p className="text-[9px] text-center truncate">{c.name}</p></div>))}</div></div>
                  )}
-                 <div><h3 className="text-sm font-bold text-gray-500 mb-2">심문 기록</h3><div className="h-64 overflow-y-auto bg-black p-4 rounded border border-gray-800 text-xs space-y-2">{selectedCase.chatHistory.map((m,i)=><div key={i} className={m.role==='user'?'text-right':'text-left'}><span className={`px-2 py-1 rounded ${m.role==='user'?'bg-blue-900/30 text-blue-200':'bg-gray-800 text-gray-300'}`}>{m.text}</span></div>)}</div></div>
               </div>
            </div>
         </div>
        ) : (
         <div className="w-full max-w-2xl animate-fadeIn">
-          <div className="flex justify-between items-center mb-6"><h2 className="text-2xl font-bold text-white">사건 기록 보관소</h2><button onClick={() => setScreen('setup')} className="text-xs text-gray-500 border border-gray-700 px-3 py-1 rounded">나가기</button></div>
-          {archive.length === 0 ? <div className="text-center text-gray-600 py-20">기록 없음</div> : <div className="grid gap-4">{archive.map((item) => (<button key={item.id} onClick={() => setSelectedCase(item)} className="bg-neutral-900 border border-gray-800 p-4 rounded-lg flex justify-between hover:border-red-500 transition text-left"><div><div className="font-bold text-white">{item.suspect}</div><div className="text-xs text-gray-500">{item.date}</div></div><div className="text-yellow-500 text-sm">{item.score?.badge}</div></button>))}</div>}
+          <div className="flex justify-between items-center mb-6"><h2 className="text-2xl font-bold text-white">CASE ARCHIVE</h2><ClickButton onClick={() => setScreen('setup')} className="text-xs text-gray-500 border border-gray-700 px-3 py-1 rounded hover:text-white">EXIT</ClickButton></div>
+          {archive.length === 0 ? <div className="text-center text-gray-600 py-20">기록 없음</div> : <div className="grid gap-4">{archive.map((item) => (<ClickButton key={item.id} onClick={() => setSelectedCase(item)} className="bg-neutral-900 border border-gray-800 p-4 rounded-lg flex justify-between hover:border-red-500 transition text-left w-full"><div><div className="font-bold text-white">{item.suspect}</div><div className="text-xs text-gray-500">{item.date}</div></div><div className="text-yellow-500 text-sm">{item.score?.badge}</div></ClickButton>))}</div>}
         </div>
        )}
     </div>
   );
 
-  if (screen === 'generating') return <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center font-mono p-6 text-center"><div className="rain-overlay"></div><LucideLoader2 size={48} className="animate-spin text-red-600 mb-6"/><h2 className="text-xl font-bold tracking-widest animate-pulse">사건 파일 구성 중...</h2><p className="text-xs text-gray-500 mt-2">{loadingText}</p></div>;
+  if (screen === 'generating') return <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center font-mono p-6 text-center relative z-10"><RainOverlay/><LucideLoader2 size={48} className="animate-spin text-red-600 mb-6"/><h2 className="text-xl font-bold tracking-widest animate-pulse">GENERATING...</h2><p className="text-xs text-gray-500 mt-2">{loadingText}</p></div>;
 
-  if (screen === 'tutorial') return (
+  if (screen === 'tutorial') {
+    const isMulti = getDifficultySettings(difficulty).multi;
+    
+    // Dynamic Guide Steps
+    const guideSteps = [
+        { icon: <LucideActivity className="text-red-500"/>, title: "평정심 파괴", desc: "약점을 찔러 방어기제를 무너뜨리세요." },
+        ...(isMulti ? [{ icon: <LucideUsers className="text-green-500"/>, title: "다인 심문 (HARD)", desc: "상단의 이름 탭을 눌러 용의자와 참고인을 교차 심문하세요."}] : []),
+        { icon: <LucideBriefcase className="text-purple-500"/>, title: "증거 제시", desc: "인벤토리에서 증거를 [선택] 후 대화하면 모순을 지적할 수 있습니다." },
+        { icon: <LucideLightbulb className="text-yellow-500"/>, title: "자동/수동 힌트", desc: "시간 경과 시 자동 힌트 지급(무료). 막힐 땐 [힌트 요청] 버튼(감점)." },
+        { icon: <LucideGavel className="text-blue-500"/>, title: "최종 추리", desc: "자백을 듣고 [수사 종결]을 눌러 답안을 제출하세요." }
+    ];
+
+    return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center font-mono p-6">
-      <div className="rain-overlay"></div>
+      <RainOverlay />
       <div className="w-full max-w-lg animate-fadeIn z-10">
-        <h2 className="text-2xl font-bold mb-6 text-red-500 tracking-widest flex items-center gap-2 border-b border-red-900 pb-4"><LucideHelpCircle size={24}/> 수사 가이드</h2>
+        <h2 className="text-2xl font-bold mb-6 text-red-500 tracking-widest flex items-center gap-2 border-b border-red-900 pb-4"><LucideHelpCircle size={24}/> MISSION GUIDE</h2>
         <div className="space-y-4 text-sm text-gray-300">
-          <div className="bg-neutral-900 p-4 border border-neutral-800 flex gap-4 rounded"><LucideActivity className="text-red-500"/><div><h3 className="font-bold text-white">1. 평정심 파괴</h3><p className="text-xs text-gray-400">약점을 찔러 용의자의 방어기제를 무너뜨리세요.</p></div></div>
-          {difficulty === 'hard' && <div className="bg-neutral-900 p-4 border border-neutral-800 flex gap-4 rounded"><LucideUsers className="text-green-500"/><div><h3 className="font-bold text-white">2. 다인 심문 (상 난이도)</h3><p className="text-xs text-gray-400">상단의 이름 탭을 눌러 용의자와 참고인을 교차 심문하세요.</p></div></div>}
-          <div className="bg-neutral-900 p-4 border border-neutral-800 flex gap-4 rounded"><LucideLightbulb className="text-yellow-500"/><div><h3 className="font-bold text-white">3. 자동/수동 힌트</h3><p className="text-xs text-gray-400">시간 경과 시 자동 힌트가 지급됩니다(무료). 막힐 땐 [힌트 요청] 버튼을 사용하세요(감점).</p></div></div>
-          <div className="bg-neutral-900 p-4 border border-neutral-800 flex gap-4 rounded"><LucideGavel className="text-blue-500"/><div><h3 className="font-bold text-white">4. 최종 추리</h3><p className="text-xs text-gray-400">충분한 자백을 들었다면 [수사 종결]을 눌러 답안을 제출하세요.</p></div></div>
-          <button onClick={() => { initCharSession(0); setScreen('briefing'); }} className="w-full mt-6 bg-white text-black font-bold py-4 hover:bg-gray-200 tracking-widest text-lg shadow-lg">브리핑 확인</button>
+          {guideSteps.map((guide, idx) => (
+            <div key={idx} className="bg-neutral-900 p-4 border border-neutral-800 flex gap-4 rounded">
+              {guide.icon}
+              <div>
+                <h3 className="font-bold text-white">{idx + 1}. {guide.title}</h3>
+                <p className="text-xs text-gray-400">{guide.desc}</p>
+              </div>
+            </div>
+          ))}
+          <ClickButton onClick={() => { initCharSession(0); setScreen('briefing'); }} className="w-full mt-6 bg-white text-black font-bold py-4 hover:bg-gray-200 tracking-widest text-lg shadow-lg">브리핑 확인</ClickButton>
         </div>
       </div>
     </div>
   );
+  }
 
   if (screen === 'briefing') return (
     <div className="min-h-screen bg-black text-gray-300 flex items-center justify-center font-mono p-6">
-       <div className="rain-overlay"></div>
+       <RainOverlay />
        <div className="w-full max-w-lg animate-fadeIn z-10">
          <h1 className="text-4xl text-white font-black mb-2 tracking-tighter">CASE FILE</h1>
-         {/* Location Badge */}
          <div className="flex items-center gap-2 mb-4 text-xs text-gray-500 border border-gray-800 rounded-full px-3 py-1 w-fit bg-black">
             <LucideMapPin size={12}/> {scenario.background}
          </div>
          <div className="bg-neutral-900/80 border border-gray-800 p-8 space-y-6 shadow-2xl backdrop-blur-sm mt-4">
-            <div><span className="block text-[10px] text-gray-600 mb-2">사건 개요</span><p className="text-sm text-gray-300 leading-relaxed font-serif italic border-l-2 border-white pl-4">"{scenario.publicBriefing}"</p></div>
-            <div><span className="block text-[10px] text-gray-600 mb-2">관련 인물</span>
+            <div><span className="block text-[10px] text-gray-600 mb-2">INCIDENT</span><p className="text-sm text-gray-300 leading-relaxed font-serif italic border-l-2 border-white pl-4">"{scenario.publicBriefing}"</p></div>
+            <div><span className="block text-[10px] text-gray-600 mb-2">PERSONS OF INTEREST</span>
                {characters.map((c, i) => <div key={i} className="text-white font-bold">{c.name} <span className="text-xs text-gray-500">({c.role === '진범' ? '용의자' : '참고인'})</span></div>)}
             </div>
          </div>
-         <button onClick={() => setScreen('game')} className="w-full mt-6 bg-red-700 hover:bg-red-600 text-white font-bold py-4 text-lg tracking-widest shadow-lg">취조실 입장</button>
+         <ClickButton onClick={() => setScreen('game')} className="w-full mt-6 bg-red-700 hover:bg-red-600 text-white font-bold py-4 text-lg tracking-widest shadow-lg">ENTER INTERROGATION ROOM</ClickButton>
        </div>
     </div>
   );
@@ -799,72 +962,59 @@ export default function App() {
   if (screen === 'game') {
     const activeComposure = composure[activeCharIndex] || 100;
     const isPanic = activeComposure <= 0;
-    
-    // Low composure FX
-    const glitchClass = isPanic || activeComposure < 30 ? "glitch-effect" : "";
-    
     return (
       <div className={`fixed inset-0 bg-black text-gray-200 flex flex-col max-w-lg mx-auto border-x border-gray-800 font-sans shadow-2xl overflow-hidden ${shakeScreen ? 'animate-shake' : ''}`}>
         <div className={`absolute inset-0 pointer-events-none z-50 ${redFlash ? 'animate-red-flash' : ''}`}></div>
         <div className="absolute inset-0 pointer-events-none z-50 crt-effect"></div>
         <div className="scanline z-50"></div>
-        <div className="rain-overlay"></div>
+        <RainOverlay />
         
-        {/* Header */}
         <div className="bg-black/90 backdrop-blur p-2 border-b border-gray-800 flex flex-col gap-2 sticky top-0 z-20">
           <div className="flex justify-between items-center px-2">
              <div className="flex items-center gap-2 text-xs text-gray-500 font-mono"><LucideClock size={12} /> 남은 턴: {timeLeft}</div>
              <div className="flex items-center gap-2 text-xs text-gray-500 font-mono">
-                <button onClick={() => setIsMuted(!isMuted)} className="hover:text-white transition">
+                <ClickButton onClick={() => setIsMuted(!isMuted)} className="hover:text-white transition">
                    {isMuted ? <LucideVolumeX size={14}/> : <LucideVolume2 size={14}/>}
-                </button>
+                </ClickButton>
              </div>
              <div className="flex items-center gap-2">
-                <div className="text-xs text-gray-500 flex items-center gap-1"><LucideActivity size={10} className={isPanic ? "text-red-500" : "text-green-500"}/> 멘탈</div>
-                <div className="w-20 h-1.5 bg-gray-800 rounded-full overflow-hidden border border-gray-700 relative">
-                   {/* Mental Bar Animation */}
-                   <div 
-                     className={`h-full transition-all duration-300 ease-out ${isPanic ? 'bg-red-600 animate-pulse' : 'bg-green-500'}`} 
-                     style={{ width: `${Math.max(0, activeComposure)}%` }} 
-                   />
+                <div className="text-xs text-gray-500 flex items-center gap-1"><LucideActivity size={10} className={isPanic ? "text-red-500" : "text-green-500"}/> 심박수</div>
+                <div className="w-20 h-1.5 bg-gray-800 rounded-full overflow-hidden border border-gray-700">
+                   <div className={`h-full transition-all duration-500 ease-out ${isPanic ? 'bg-red-600 animate-pulse' : 'bg-green-500'}`} style={{ width: `${Math.max(0, activeComposure)}%` }} />
                 </div>
                 <span className="text-[10px] text-gray-400 w-6 text-right">{activeComposure}</span>
              </div>
           </div>
-          <div className="flex justify-between items-center px-2">
+          <div className="flex justify-center items-center px-2 mt-2">
              {characters.length > 1 ? (
-                <div className="flex gap-1 flex-1 mr-2">
+                <div className="flex gap-1 w-full max-w-xs">
                   {characters.map((char, i) => (
-                    <button key={i} onClick={() => { setActiveCharIndex(i); initCharSession(i); }} className={`flex-1 py-1.5 text-[10px] font-bold transition rounded-sm ${activeCharIndex === i ? 'bg-white text-black' : 'bg-gray-800 text-gray-500 border border-gray-700'}`}>{char.name}</button>
+                    <ClickButton key={i} onClick={() => { setActiveCharIndex(i); initCharSession(i); }} className={`flex-1 py-1.5 text-[10px] font-bold transition rounded-sm ${activeCharIndex === i ? 'bg-white text-black' : 'bg-gray-800 text-gray-500 border border-gray-700'}`}>{char.name}</ClickButton>
                   ))}
                 </div>
              ) : (
-                <div className="text-center font-bold text-white py-1 text-sm flex-1">{characters[0]?.name}</div>
+                <div className="text-center font-bold text-white py-1 text-sm">{characters[0]?.name}</div>
              )}
-             <button onClick={() => setIsCaseFileOpen(true)} className="text-xs bg-gray-800 hover:bg-gray-700 px-2 py-1 rounded text-gray-300 flex items-center gap-1"><LucideFileText size={12}/> 사건 파일</button>
           </div>
         </div>
 
-        {/* Modal: Case File */}
-        {isCaseFileOpen && (
-          <div className="absolute inset-0 bg-black/95 z-50 p-6 animate-fadeIn font-mono">
-            <div className="flex justify-between items-center mb-6"><h2 className="text-xl font-bold text-white">공개 정보</h2><button onClick={() => setIsCaseFileOpen(false)}><LucideX/></button></div>
-            <div className="flex items-center gap-2 mb-4 text-xs text-gray-500"><LucideMapPin size={12}/> {scenario.background}</div>
-            <p className="text-sm text-gray-400">{scenario.publicBriefing}</p>
-          </div>
-        )}
-
-        {/* Modal: Inventory */}
+        {/* Inventory Modal with Evidence Selection (Feature #1) */}
         {isInventoryOpen && (
-          <div className="absolute inset-0 bg-black/95 z-50 p-6 animate-fadeIn font-mono overflow-y-auto">
-            <div className="flex justify-between items-center mb-6"><h2 className="text-xl font-bold text-white flex gap-2"><LucideBriefcase/> 증거물 가방</h2><button onClick={() => setIsInventoryOpen(false)}><LucideX/></button></div>
+          <div className="absolute inset-0 bg-black/95 z-50 p-6 animate-fadeIn font-mono">
+            <div className="flex justify-between items-center mb-6"><h2 className="text-xl font-bold text-white flex gap-2"><LucideBriefcase/> 증거물 보관함</h2><ClickButton onClick={() => setIsInventoryOpen(false)}><LucideX/></ClickButton></div>
             {collectedEvidence.length === 0 ? <p className="text-gray-600 text-center">수집된 증거가 없습니다.</p> : 
               <div className="grid grid-cols-2 gap-4">
                  {collectedEvidence.map((ev, i) => (
-                    <div key={i} className="bg-neutral-900 border border-gray-800 p-2 rounded">
-                       <img src={ev.url} className="w-full h-32 object-cover mb-2 grayscale hover:grayscale-0 transition" alt={ev.name} />
+                    <div key={i} className={`bg-neutral-900 border p-2 rounded relative ${selectedEvidence?.name === ev.name ? 'border-yellow-500' : 'border-gray-800'}`}>
+                       <img src={ev.url} className="w-full h-24 object-cover mb-2 grayscale hover:grayscale-0 transition" alt={ev.name} />
                        <div className="text-white font-bold text-xs">{ev.name}</div>
-                       <div className="text-[10px] text-gray-500">{ev.desc}</div>
+                       <div className="text-[10px] text-gray-500 mb-2">{ev.desc}</div>
+                       <ClickButton 
+                            onClick={() => { setSelectedEvidence(ev); setIsInventoryOpen(false); }} 
+                            className={`w-full py-1 text-[10px] font-bold ${selectedEvidence?.name === ev.name ? 'bg-yellow-600 text-black' : 'bg-gray-800 text-gray-300'}`}
+                       >
+                           {selectedEvidence?.name === ev.name ? <span className="flex items-center justify-center gap-1"><LucideCheckCircle2 size={10}/> 선택됨</span> : '선택'}
+                       </ClickButton>
                     </div>
                  ))}
               </div>
@@ -875,18 +1025,25 @@ export default function App() {
         <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-hide relative z-10">
           {(chatHistories[activeCharIndex] || []).map((msg, idx) => (
             <div key={idx} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : msg.role === 'system' ? 'items-center' : 'items-start'}`}>
-              {msg.role === 'user' && (<div className="max-w-[85%] text-right animate-fadeIn"><span className={`inline-block text-[10px] px-1 mb-1 border ${msg.stance === '수사' ? 'text-purple-400 border-purple-500' : 'text-gray-500 border-gray-700'}`}>{msg.stance}</span><div className={`border px-4 py-2 text-sm whitespace-pre-wrap text-left ${msg.isAction ? 'bg-purple-900/20 border-purple-800 text-purple-200' : 'bg-gray-800/50 border-gray-700 text-gray-200'}`}>{msg.text}</div></div>)}
+              {msg.role === 'user' && (
+                  <div className="max-w-[85%] text-right animate-fadeIn">
+                      <div className="flex flex-col items-end gap-1">
+                          {msg.presentedEvidence && (
+                              <div className="text-[10px] bg-purple-900/50 text-purple-200 px-2 py-0.5 border border-purple-700 rounded flex items-center gap-1">
+                                  <LucideBriefcase size={10}/> 증거 제시: {msg.presentedEvidence.name}
+                              </div>
+                          )}
+                          <span className={`inline-block text-[10px] px-1 border ${msg.stance === '수사' ? 'text-purple-400 border-purple-500' : 'text-gray-500 border-gray-700'}`}>{msg.stance}</span>
+                      </div>
+                      <div className={`border px-4 py-2 text-sm whitespace-pre-wrap text-left ${msg.isAction ? 'bg-purple-900/20 border-purple-800 text-purple-200' : 'bg-gray-800/50 border-gray-700 text-gray-200'}`}>{msg.text}</div>
+                  </div>
+              )}
               {msg.role === 'system' && (<div className="w-full text-center my-2 animate-fadeIn flex flex-col items-center gap-2">{msg.isImageLoading ? <div className="text-xs text-yellow-500 animate-pulse flex items-center gap-2"><LucideLoader2 size={12} className="animate-spin"/> 현상 중...</div> : <>{msg.imageUrl && <img src={msg.imageUrl} className="max-w-[200px] border-4 border-white shadow-lg rotate-1 grayscale" alt="Evidence" />}<div className="inline-block bg-red-900/30 border border-red-800 text-red-300 text-xs px-3 py-1 rounded-full"><LucideLightbulb size={12} className="inline mr-1 mb-0.5"/> {msg.text}</div></>}</div>)}
               {msg.role === 'model' && (
                 <div className="max-w-[90%] animate-fadeIn">
                   {msg.action && <div className="text-xs text-gray-500 italic mb-1 pl-2 border-l-2 border-gray-800">"{msg.action}"</div>}
-                  <div 
-                    className={`bg-black text-gray-300 border px-4 py-2 text-sm shadow-lg whitespace-pre-wrap leading-relaxed ${msg.isNarration ? 'border-purple-500 text-purple-300' : 'border-gray-800'} ${glitchClass}`}
-                    data-text={msg.text}
-                  >
-                    {formatTextWithHighlights(msg.text)}
-                  </div>
-                  {msg.damage > 0 && <div className="mt-1 text-xs text-red-500 font-bold flex items-center gap-1"><LucideZap size={10}/> 멘탈 -{msg.damage} {msg.isCritical && "(CRITICAL!)"}</div>}
+                  <div className={`bg-black text-gray-300 border px-4 py-2 text-sm shadow-lg whitespace-pre-wrap leading-relaxed ${msg.isNarration ? 'border-purple-500 text-purple-300' : 'border-gray-800'}`}>{formatTextWithHighlights(msg.text)}</div>
+                  {msg.damage > 0 && <div className="mt-1 text-xs text-red-500 font-bold flex items-center gap-1"><LucideZap size={10}/> 평정심 -{msg.damage} {msg.isCritical && "(CRITICAL!)"}</div>}
                 </div>
               )}
             </div>
@@ -897,14 +1054,23 @@ export default function App() {
 
         <div className="bg-black p-3 border-t border-gray-800 z-20">
           <div className="flex justify-between mb-2 items-center">
-             <button onClick={handleRequestHint} disabled={loading || hintsLeft <= 0} className={`text-xs px-3 py-1 rounded flex items-center gap-1 border transition ${hintsLeft > 0 ? 'bg-yellow-900/30 text-yellow-500 border-yellow-800 hover:bg-yellow-900/50' : 'bg-gray-900 text-gray-600 border-gray-800'}`}><LucideLightbulb size={12}/> 힌트 요청 ({hintsLeft}/3)</button>
+             <ClickButton onClick={handleRequestHint} disabled={loading || hintsLeft <= 0} className={`text-xs px-3 py-1 rounded flex items-center gap-1 border transition ${hintsLeft > 0 ? 'bg-yellow-900/30 text-yellow-500 border-yellow-800 hover:bg-yellow-900/50' : 'bg-gray-900 text-gray-600 border-gray-800'}`}><LucideLightbulb size={12}/> 힌트 ({hintsLeft})</ClickButton>
              <div className="flex gap-2">
-               <button onClick={() => setScreen('endingForm')} className="text-xs bg-red-900/50 text-red-300 border border-red-800 px-3 py-1 hover:bg-red-800 transition">수사 종결</button>
-               <button onClick={() => setIsInventoryOpen(true)} className="text-gray-500 hover:text-white"><LucideBriefcase size={20}/></button>
+               <ClickButton onClick={() => setScreen('endingForm')} className="text-xs bg-red-900/50 text-red-300 border border-red-800 px-3 py-1 hover:bg-red-800 transition">수사 종결</ClickButton>
+               <ClickButton onClick={() => setIsInventoryOpen(true)} className="text-gray-500 hover:text-white"><LucideBriefcase size={20}/></ClickButton>
              </div>
           </div>
-          <div className="grid grid-cols-4 gap-1 mb-2">{['normal', 'aggressive', 'emotional', 'logic'].map((st) => { const info = getStanceInfo(st); return <button key={st} onClick={() => setCurrentStance(st)} disabled={loading || isTyping} className={`py-2 text-[10px] font-bold border transition uppercase ${currentStance === st ? `${info.color} bg-gray-900` : 'border-gray-800 text-gray-600'} disabled:opacity-50`}>{info.label}</button> })}</div>
-          <div className="flex gap-2"><input type="text" className="flex-1 bg-gray-900 text-gray-300 border border-gray-800 px-4 py-3 text-sm focus:border-gray-600 outline-none font-mono disabled:opacity-50" placeholder="(행동) 혹은 대화..." value={userInput} onChange={e=>setUserInput(e.target.value)} onKeyPress={e=>e.key==='Enter'&&!loading&&!isTyping&&handleSendMessage()} disabled={loading || isTyping}/><button onClick={handleSendMessage} disabled={loading || isTyping} className="bg-gray-800 hover:bg-white hover:text-black text-gray-400 px-4 border border-gray-700 transition disabled:opacity-50"><LucideSend size={18}/></button></div>
+          
+          {/* Selected Evidence Indicator */}
+          {selectedEvidence && (
+              <div className="flex justify-between items-center bg-yellow-900/20 border border-yellow-700/50 px-3 py-1 mb-2 rounded text-xs">
+                  <span className="text-yellow-500 font-bold flex items-center gap-2"><LucideBriefcase size={12}/> 제시할 증거: {selectedEvidence.name}</span>
+                  <ClickButton onClick={() => setSelectedEvidence(null)} className="text-gray-500 hover:text-white"><LucideX size={12}/></ClickButton>
+              </div>
+          )}
+
+          <div className="grid grid-cols-4 gap-1 mb-2">{['normal', 'aggressive', 'emotional', 'logic'].map((st) => { const info = getStanceInfo(st); return <ClickButton key={st} onClick={() => setCurrentStance(st)} disabled={loading || isTyping} className={`py-2 text-[10px] font-bold border transition uppercase ${currentStance === st ? `${info.color} bg-gray-900` : 'border-gray-800 text-gray-600'} disabled:opacity-50`}>{info.label}</ClickButton> })}</div>
+          <div className="flex gap-2"><input type="text" className="flex-1 bg-gray-900 text-gray-300 border border-gray-800 px-4 py-3 text-sm focus:border-gray-600 outline-none font-mono disabled:opacity-50" placeholder="(행동) 혹은 대화..." value={userInput} onChange={e=>setUserInput(e.target.value)} onKeyPress={e=>e.key==='Enter'&&!loading&&!isTyping&&handleSendMessage()} disabled={loading || isTyping}/><ClickButton onClick={handleSendMessage} disabled={loading || isTyping} className="bg-gray-800 hover:bg-white hover:text-black text-gray-400 px-4 border border-gray-700 transition disabled:opacity-50"><LucideSend size={18}/></ClickButton></div>
         </div>
       </div>
     );
@@ -913,14 +1079,14 @@ export default function App() {
   if (screen === 'endingForm') return (
     <div className="min-h-screen bg-black text-gray-300 flex items-center justify-center font-mono p-6">
        <div className="w-full max-w-lg animate-fadeIn bg-neutral-900 p-6 border border-gray-800">
-          <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2"><LucideGavel className="text-red-500"/> 최종 수사 보고서</h2>
+          <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2"><LucideGavel className="text-red-500"/> FINAL REPORT</h2>
           <div className="space-y-4">
              <div><label className="text-xs text-gray-500">진범 지목</label><select className="w-full bg-black border border-gray-700 p-2 text-white" value={deduction.culprit} onChange={e=>setDeduction({...deduction, culprit: e.target.value})}><option value="">선택하세요</option>{characters.map((c,i)=><option key={i} value={c.name}>{c.name}</option>)}<option value="제3의 인물">제3의 인물</option></select></div>
-             <div><label className="text-xs text-gray-500">범행 도구</label><input className="w-full bg-black border border-gray-700 p-2 text-white" placeholder="예: 독약" value={deduction.weapon} onChange={e=>setDeduction({...deduction, weapon: e.target.value})}/></div>
-             <div><label className="text-xs text-gray-500">범행 동기</label><input className="w-full bg-black border border-gray-700 p-2 text-white" placeholder="예: 금전 문제" value={deduction.motive} onChange={e=>setDeduction({...deduction, motive: e.target.value})}/></div>
+             <div><label className="text-xs text-gray-500">살해 도구</label><input className="w-full bg-black border border-gray-700 p-2 text-white" placeholder="예: 독약" value={deduction.weapon} onChange={e=>setDeduction({...deduction, weapon: e.target.value})}/></div>
+             <div><label className="text-xs text-gray-500">범행 동기</label><input className="w-full bg-black border border-gray-700 p-2 text-white" placeholder="예: 빚 때문에" value={deduction.motive} onChange={e=>setDeduction({...deduction, motive: e.target.value})}/></div>
              <div><label className="text-xs text-gray-500">결정적 트릭</label><textarea className="w-full bg-black border border-gray-700 p-2 text-white h-20" placeholder="트릭이나 알리바이 조작 방법" value={deduction.trick} onChange={e=>setDeduction({...deduction, trick: e.target.value})}/></div>
           </div>
-          <button onClick={submitDeduction} disabled={loading} className="w-full mt-6 bg-red-700 hover:bg-red-600 text-white font-bold py-3 transition">{loading ? "채점 중..." : "보고서 제출"}</button>
+          <ClickButton onClick={submitDeduction} disabled={loading} className="w-full mt-6 bg-red-700 hover:bg-red-600 text-white font-bold py-3 transition">{loading ? "채점 중..." : "보고서 제출"}</ClickButton>
        </div>
     </div>
   );
@@ -930,9 +1096,9 @@ export default function App() {
       <div className="scanline"></div>
       <h2 className="text-6xl font-black mb-4 tracking-tighter text-white">EVALUATION</h2>
       <div className="mb-8"><div className="text-6xl font-bold text-yellow-500 mb-2">{gameResult.score.badge}</div><p className="text-sm text-gray-400">SCORE: {gameResult.score.total}</p></div>
-      <div className="border border-gray-800 bg-gray-900/50 p-6 mb-8 w-full max-w-md text-left text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">{gameResult.feedback}</div>
-      <div className="border border-red-900/30 p-4 mb-8 w-full max-w-md text-left"><h3 className="text-red-500 font-bold mb-2">진실 (TRUTH)</h3><p className="text-xs text-gray-400">{scenario.hiddenTruth}</p></div>
-      <button onClick={() => { setScreen('setup'); setMessages([]); setChatHistories({}); }} className="px-8 py-4 bg-white text-black font-bold hover:bg-gray-300 tracking-widest transition">새로운 사건 시작</button>
+      <div className="border border-gray-800 bg-gray-900/50 p-6 mb-8 w-full max-w-md text-left text-sm text-gray-300 leading-relaxed whitespace-pre-wrap font-typewriter">{gameResult.feedback}</div>
+      <div className="border border-red-900/30 p-4 mb-8 w-full max-w-md text-left"><h3 className="text-red-500 font-bold mb-2">REAL TRUTH</h3><p className="text-xs text-gray-400">{scenario.hiddenTruth}</p></div>
+      <ClickButton onClick={() => { setScreen('setup'); setChatHistories({}); }} className="px-8 py-4 bg-white text-black font-bold hover:bg-gray-300 tracking-widest transition">NEW INVESTIGATION</ClickButton>
     </div>
   );
 
